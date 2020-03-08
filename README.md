@@ -18,4 +18,4 @@ Push source code using scripts from root ./scripts/push-source-code.sh
 Open the scratch org instance in a browser with `sfdx force:org:open -u apex-playground`
 
 ## Code
-[SOQL Builder using the Visitor pattern](force-app/main/default/Soql/YetAnotherBuilder/Readme.md)
+[SOQL Builder using the Visitor pattern](force-app/main/default/classes/Soql/YetAnotherBuilder/Readme.md)
