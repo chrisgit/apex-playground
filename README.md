@@ -13,8 +13,10 @@ The development environment is based around Salesforce DX, code is written local
 - [Salesforce Developer Hub](https://developer.salesforce.com/promotions/orgs/dx-signup)
 
 ## Getting started
-Create a scratch org using scripts from root ./scripts/create-scratch-org.sh
-Push source code using scripts from root ./scripts/push-source-code.sh
+Create a scratch org using scripts from root `./scripts/create-scratch-org.sh`
+
+Push source code using scripts from root `./scripts/push-source-code.sh`
+
 Open the scratch org instance in a browser with `sfdx force:org:open -u apex-playground`
 
 ## Code
