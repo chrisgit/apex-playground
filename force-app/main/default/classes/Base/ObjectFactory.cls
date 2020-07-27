@@ -1,10 +1,13 @@
 // Wrap the Salesforce object metadata classes
 public inherited sharing class ObjectFactory {
-    protected Map<String, Schema.SObjectType> globalDescribeMap = Schema.getGlobalDescribe();
+    private static Map<String, ObjectSchema> cachedSchema = new Map<String, ObjectSchema>();
 
-    public ObjectSchema getSchemaFor(String objectName) {
-        Schema.SObjectType sObjectType = this.globalDescribeMap.get(objectName);
-        Schema.DescribeSObjectResult sObjectResult = sObjectType.getDescribe();
-        return new ObjectSchema(sObjectResult);
+    public static ObjectSchema getSchemaForSObject(String objectType) {
+        if (cachedSchema.containsKey(objectType) == false) {
+            Schema.DescribeSObjectResult sObjectResult = Schema.describeSObjects(new List<String> { objectType }).get(0);
+            ObjectSchema schema = new ObjectSchema(sObjectResult);
+            cachedSchema.put(objectType, schema);
+        }
+        return cachedSchema.get(objectType);
     }
 }

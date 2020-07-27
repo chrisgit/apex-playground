@@ -34,7 +34,33 @@ public inherited sharing class ObjectSchema {
         return fieldPaths;
     }
 
-    public DescribeFieldResult getField(String fieldName) {
-        return objectFields.get(fieldName).getDescribe();
+    public Schema.SObjectField getField(String fieldName) {
+        return objectFields.get(fieldName);
+    }
+
+    public DescribeFieldResult getFieldDescription(String fieldName) {
+        Schema.SObjectField field = objectFields.get(fieldName);
+        if (null == field) {
+            return null;
+        }
+        return field.getDescribe();
     }
 }
+
+// getFieldDescription
+// Schema.DescribeFieldResult a = Account.Name.getDescribe();
+// Schema.DescribeFieldResult b = Schema.sObjectType.Account.fields.Name;
+// Schema.DescribeFieldResult c = new ObjectSchema(Schema.sObjectType.Account).getFieldDescription('name'); 
+// System.Debug(a);
+// System.Debug(b);
+// System.Debug(c);
+
+// System.Debug('Compare objects  ...');
+// System.Debug(a == b); // true
+// System.Debug(a === b); // false
+
+// System.Debug(a == c); // true
+// System.Debug(a === c); // false
+
+// System.Debug(b == c); // true
+// System.Debug(b === c); // false

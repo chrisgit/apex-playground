@@ -74,7 +74,7 @@ The builder here accepts relationship and fieldnames as STRINGS; not so bad but 
 ```
 ObjectSchema schema = new ObjectFactory().getSchemaFor('Account');
 System.Debug('***** Field ' + schema.getField('Name'));
-System.Debug('***** Field accessible? ' + schema.getField('Name').isAccessible());
+System.Debug('***** Field accessible? ' + schema.getFieldDescription('Name').isAccessible());
 List<Schema.FieldSetMember> fieldSetMemberList =  schema.getFieldSet('YourFieldSet');
 for(Schema.FieldSetMember fieldSetMemberObj : fieldSetMemberList)
 {

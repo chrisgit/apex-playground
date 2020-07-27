@@ -13,3 +13,7 @@ package.xml
 
 # Markdown files
 **.md
+
+# Images
+**.png
+

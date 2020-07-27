@@ -1,3 +1,6 @@
+// Rather than this being Projection builder ... make this a FieldList class
+// Internally the FieldList class can resolve FieldSet or Expressions
+
 public inherited sharing class SoqlProjectionBuilderWithLogic implements ISoqlProjectionBuilder {
     protected SimpleStack stack = new SimpleStack();
     protected String output = '';
@@ -38,7 +41,7 @@ public inherited sharing class SoqlProjectionBuilderWithLogic implements ISoqlPr
     
     public void build(SoqlQuery query) {
         // Push current object to stack
-        ObjectSchema schema = new ObjectFactory().getSchemaFor(query.fromObject);
+        ObjectSchema schema = ObjectFactory.getSchemaForSObject(query.fromObject);
         stack.push(new ObjectReference('', schema));
 
         this.output = this.output + 'SELECT ';
@@ -52,7 +55,7 @@ public inherited sharing class SoqlProjectionBuilderWithLogic implements ISoqlPr
     public void build(SoqlField field) {
         // Field accessibility checks or other from current object
         ObjectReference reference = (ObjectReference)this.stack.peek();
-        if (reference.schema.getField(field.FieldName).isAccessible()) {
+        if (reference.schema.getFieldDescription(field.FieldName).isAccessible()) {
             this.output = this.output + (reference.path + field.FieldName) + ', ';
         }
     }
@@ -65,7 +68,7 @@ public inherited sharing class SoqlProjectionBuilderWithLogic implements ISoqlPr
 
     public void build(SoqlRelation expr) {
         // Push the relation object to the stack
-        ObjectSchema schema = new ObjectFactory().getSchemaFor(expr.relationName);
+        ObjectSchema schema = ObjectFactory.getSchemaForSObject(expr.relationName);
         String currentPath = ((ObjectReference)this.stack.peek()).path;
         this.stack.push(new ObjectReference(currentPath + expr.relationName + '.', schema));
 

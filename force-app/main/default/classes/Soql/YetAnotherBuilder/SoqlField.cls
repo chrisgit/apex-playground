@@ -1,4 +1,5 @@
 // Originally inherited Expression but doesn't look like it supports double dispatch
+// Make this virtual ... ApiField can inherit ...
    public inherited sharing class SoqlField implements ISoqlExpression  {
     public String fieldName
     {
