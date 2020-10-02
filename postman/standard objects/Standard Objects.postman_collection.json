@@ -1,0 +1,857 @@
+{
+	"info": {
+		"_postman_id": "4bb0a42f-0d99-47d7-93a0-e8580a1bdc90",
+		"name": "Standard Objects",
+		"description": "Postman collection for Standard Salesforce Objects",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Org",
+			"item": [
+				{
+					"name": "Salesforce Query",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{query}}?q=SELECT+name+from+Account",
+							"host": [
+								"{{query}}"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "SELECT+name+from+Account"
+								}
+							]
+						},
+						"description": "Query accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Salesforce Limits",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "65225e14-7d6d-41b8-b587-46d112a61a5f",
+								"exec": [
+									"var template = `\r",
+									"    <h3>Salesforce Org Limits for {{orgurl}}</h3>\r",
+									"    <table bgcolor=\"#FFFFFF\">\r",
+									"        <tr>\r",
+									"            <th>Setting</th>\r",
+									"            <th>Max</th>\r",
+									"            <th>Used</th>\r",
+									"            <th>Remaining</th>\r",
+									"        </tr>\r",
+									"\r",
+									"        {{#each jsonData}}\r",
+									"            <tr>\r",
+									"                <td>{{@key}}</td>\r",
+									"                <td>{{this.Max}}</td>\r",
+									"                <td>{{this.Used}}</td>\r",
+									"                <td>{{this.Remaining}}</td>\r",
+									"            </tr>\r",
+									"        {{/each}}\r",
+									"\r",
+									"    </table>\r",
+									"`;\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody);\r",
+									"Object.keys(jsonData).forEach(key => jsonData[key].Used = jsonData[key].Max - jsonData[key].Remaining );\r",
+									"var templateData = {\r",
+									"    orgurl: pm.collectionVariables.get('orgurl'),\r",
+									"    jsonData: jsonData\r",
+									"}\r",
+									"\r",
+									"pm.visualizer.set(template, templateData);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{limits}}",
+							"host": [
+								"{{limits}}"
+							]
+						},
+						"description": "Org Limits"
+					},
+					"response": []
+				},
+				{
+					"name": "Salesforce Resources",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{resources}}",
+							"host": [
+								"{{resources}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Request for Salesforce org details",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Account Details",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "864ceed9-bf9f-4af7-bebf-db23149efcae",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}",
+							"host": [
+								"{{accountobject}}"
+							]
+						},
+						"description": "Retrieve account objects"
+					},
+					"response": []
+				},
+				{
+					"name": "Failure - Account ID Not Found",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b0670400-0fe2-4c1e-8027-1071469ab6aa",
+								"exec": [
+									"// We can set objectid here ...\r",
+									"const objectIdThatIsUnlikelyToExist = '00126000010UtcgAAC';\r",
+									"pm.collectionVariables.set(\"objectid\", objectIdThatIsUnlikelyToExist);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "40204987-89cc-4533-b6e4-23b7121b3adc",
+								"exec": [
+									"let expectedErrorCode = 'NOT_FOUND';\r",
+									"let expectedErrorMessage = 'The requested resource does not exist';\r",
+									"let expectedResponseBody = [\r",
+									"    {\r",
+									"        \"errorCode\": expectedErrorCode,\r",
+									"        \"message\": expectedErrorMessage\r",
+									"    }\r",
+									"];\r",
+									"\r",
+									"pm.test(\"Http Status is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.expect(pm.response).to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message is array, one item and has specified content\", function() {\r",
+									"    // Note the values can be in any order\r",
+									"     pm.expect(pm.response.json()).to.deep.equal(expectedResponseBody);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}/{{objectid}}",
+							"host": [
+								"{{accountobject}}"
+							],
+							"path": [
+								"{{objectid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Failure - No Auth 401",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f848dd97-5376-4cea-a9c1-50979a29b392",
+								"exec": [
+									"let expectedErrorCode = 'INVALID_SESSION_ID';\r",
+									"let expectedErrorMessage = 'Session expired or invalid';\r",
+									"let expectedResponseBody = [\r",
+									"    {\r",
+									"        \"errorCode\": expectedErrorCode,\r",
+									"        \"message\": expectedErrorMessage\r",
+									"    }\r",
+									"];\r",
+									"\r",
+									"// Long hand way to check response\r",
+									"pm.test(\"Http Status is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Content-Type header is present\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.expect(pm.response).to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reponse body is an array\", function () {\r",
+									"    pm.expect(pm.response.json()).to.be.an('array');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Reponse body array has more than one item\", function () {\r",
+									"    pm.expect(pm.response.json().length).to.be.above(0);\r",
+									"});\r",
+									"\r",
+									"let messageObject = pm.response.json().first();\r",
+									"pm.test(\"First messages expected shape\", function () {\r",
+									"    pm.expect(messageObject).to.have.all.keys('message', 'errorCode');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"To have property errorCode\", function () {\r",
+									"    pm.expect(messageObject).to.have.property('errorCode');\r",
+									"});\r",
+									"\r",
+									"pm.test(`errorCode is ${expectedErrorCode}`, function () {\r",
+									"    pm.expect(messageObject.errorCode).to.eq(expectedErrorCode);\r",
+									"});\r",
+									"\r",
+									"// Check the shape of the response (you can generate the schema from JSON)\r",
+									"var schema = {\r",
+									"    \"type\": \"array\",\r",
+									"    \"items\": [{\r",
+									"        type: \"object\",\r",
+									"        properties:{\r",
+									"         \"message\": {\r",
+									"            \"type\":\"string\"\r",
+									"             },\r",
+									"         \"errorCode\": {\r",
+									"             \"type\":\"string\"\r",
+									"             }\r",
+									"        }\r",
+									"    }]\r",
+									"};\r",
+									"\r",
+									"pm.test('Response schema type nodes verification', function() {\r",
+									"  pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Validate schema\", () => {\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Matches against partial object (message)\", function () {\r",
+									"    var partialMatch = { \"message\": expectedErrorMessage };\r",
+									"    pm.expect(messageObject).to.include(partialMatch);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Matches against partial object (errorCode)\", function () {\r",
+									"    var partialMatch = { \"errorCode\": expectedErrorCode };\r",
+									"    pm.expect(messageObject).to.include(partialMatch);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Message is array, one item and has specified content\", function() {\r",
+									"    // Note the values can be in any order\r",
+									"     pm.expect(pm.response.json()).to.deep.equal(expectedResponseBody);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}",
+							"host": [
+								"{{accountobject}}"
+							]
+						},
+						"description": "Example to show 401 response"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Multiple Account Records Composite",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c23996ac-9261-4336-ad7c-9735748ecdfc",
+								"exec": [
+									"// If running from Newman then we will set the environment variable\r",
+									"let environmentOrg = pm.environment.get('orgurl');\r",
+									"let environmentAccessToken = pm.environment.get('accesstoken');\r",
+									"// If running from Postman then we use the collection variable\r",
+									"let collectionOrg = pm.collectionVariables.get('orgurl');\r",
+									"let collectionAccessToken = pm.collectionVariables.get('accesstoken');\r",
+									"\r",
+									"let orgurl = (environmentOrg === undefined) ? collectionOrg : environmentOrg;\r",
+									"let accessToken = (environmentAccessToken === undefined) ? collectionAccessToken : environmentAccessToken;\r",
+									"\r",
+									"// Reference to the URLs\r",
+									"let accountObject = pm.collectionVariables.get('accountobject');\r",
+									"let contactObject = pm.collectionVariables.get('contactobject');\r",
+									"let userObject = pm.collectionVariables.get('userobject');\r",
+									"let apiversion = pm.collectionVariables.get('apiversion');\r",
+									"let composite = pm.collectionVariables.get('composite');\r",
+									"\r",
+									"// Replace the embedded variables within the URLs\r",
+									"let accountUrl = accountObject.replace('{{orgurl}}', '').replace('{{apiversion}}', apiversion);\r",
+									"let contactUrl = contactObject.replace('{{orgurl}}', '').replace('{{apiversion}}', apiversion);\r",
+									"let userUrl = userObject.replace('{{orgurl}}', '').replace('{{apiversion}}', apiversion);\r",
+									"let compositeUrl = composite.replace('{{orgurl}}', orgurl).replace('{{apiversion}}', apiversion);\r",
+									"const authToken = `Bearer ${accessToken}`;\r",
+									"\r",
+									"let compositeBody = {\r",
+									"    \"allOrNone\" : true,\r",
+									"    \"compositeRequest\" : [{\r",
+									"        \"method\" : \"POST\",\r",
+									"        \"url\" : accountUrl,\r",
+									"        \"referenceId\" : \"NewAccount\",\r",
+									"        \"body\" : {  \r",
+									"            \"Name\" : pm.variables.replaceIn(\"{{$randomFirstName}}\"),\r",
+									"            \"BillingStreet\" : pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+									"            \"BillingCity\" : pm.variables.replaceIn(\"{{$randomCity}}\"),\r",
+									"            \"BillingState\" : \"California\",\r",
+									"            \"Industry\" : \"Technology\"\r",
+									"        }\r",
+									"    },{\r",
+									"        \"method\" : \"GET\",\r",
+									"        \"referenceId\" : \"NewAccountInfo\",\r",
+									"        \"url\" : accountUrl + \"/@{NewAccount.id}\"\r",
+									"    },{\r",
+									"        \"method\" : \"POST\",\r",
+									"        \"referenceId\" : \"NewContact\",\r",
+									"        \"url\" : contactUrl,\r",
+									"        \"body\" : {  \r",
+									"            \"lastname\" : pm.variables.replaceIn(\"{{$randomFullName}}\"),\r",
+									"            \"Title\" : pm.variables.replaceIn(\"{{$randomJobTitle}}\"),\r",
+									"            \"MailingStreet\" : pm.variables.replaceIn(\"{{$randomStreetAddress}}\"),\r",
+									"            \"MailingCity\" : pm.variables.replaceIn(\"{{$randomCity}}\"),\r",
+									"            \"MailingState\" : \"@{NewAccountInfo.BillingState}\",\r",
+									"            \"AccountId\" : \"@{NewAccountInfo.Id}\",\r",
+									"            \"Email\" : pm.variables.replaceIn(\"{{$randomExampleEmail}}\"),\r",
+									"            \"Phone\" : pm.variables.replaceIn(\"{{$randomPhoneNumber}}\")\r",
+									"        }\r",
+									"    },{\r",
+									"        \"method\" : \"GET\",\r",
+									"        \"referenceId\" : \"NewAccountOwner\",\r",
+									"        \"url\" : userUrl + \"/@{NewAccountInfo.OwnerId}?fields=Name,companyName,Title,City,State\"\r",
+									"    },{\r",
+									"        \"method\" : \"GET\",\r",
+									"        \"referenceId\" : \"AccountMetadata\",\r",
+									"        \"url\" : accountUrl + \"/describe\",\r",
+									"        \"httpHeaders\" : {\r",
+									"            \"If-Modified-Since\" : \"Tue, 31 May 2016 18:13:37 GMT\"\r",
+									"        }\r",
+									"    }]\r",
+									"}\r",
+									"\r",
+									"//console.debug({ \"request\": compositeBody });\r",
+									"//console.debug(compositeBody);\r",
+									"\r",
+									"pm.sendRequest({\r",
+									"    url: compositeUrl,\r",
+									"    method: 'POST',\r",
+									"    header: {\r",
+									"        'content-type': 'application/json',\r",
+									"        'Authorization': authToken\r",
+									"    },\r",
+									"    body: {\r",
+									"        mode: 'raw',\r",
+									"        raw: JSON.stringify(compositeBody)\r",
+									"    }\r",
+									"}, function (err, res) {\r",
+									"    if (err) {\r",
+									"        console.log(`An error occured sending the request ${err}`);\r",
+									"    } else {\r",
+									"        if (res.code == 200) {\r",
+									"            let data = res.json();\r",
+									"            //console.debug('Request to composite URL complete');\r",
+									"            //console.debug(`Response body: ${JSON.stringify(data)}`);\r",
+									"\r",
+									"            let accountId = data.compositeResponse[0].body.id;\r",
+									"            console.log(`Account created with id [${accountId}] storing in lastCreatedAccountId and allCreatedAccounts collection`);\r",
+									"\r",
+									"            // Store the last created Account Id\r",
+									"            pm.collectionVariables.set('lastCreatedAccountId', accountId);\r",
+									"\r",
+									"            // Store the last created Acount Id in a collection    \r",
+									"            let allCreatedAccounts = pm.collectionVariables.get('allCreatedAccounts');\r",
+									"            try {\r",
+									"                allCreatedAccounts = JSON.parse(allCreatedAccounts);\r",
+									"            } catch(ex) {\r",
+									"                allCreatedAccounts = { account: [] };\r",
+									"            }\r",
+									"            allCreatedAccounts.account.add(accountId);\r",
+									"            pm.collectionVariables.set('allCreatedAccounts', JSON.stringify(allCreatedAccounts));\r",
+									"        }\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"/*\r",
+									"// In theory we ought to be able to chain multiple requests here but in practice we do not seem to be able to change the pm.XXX (collection/environment) variables\r",
+									"function sendPostRequest(url, authToken, requestBody) {\r",
+									"    return new Promise(\r",
+									"        resolve => {\r",
+									"            const postReq = {\r",
+									"                url: url,\r",
+									"                method: 'POST',\r",
+									"                header: {\r",
+									"                    'content-type': 'application/json',\r",
+									"                    'Authorization': authToken\r",
+									"                },\r",
+									"                body: {\r",
+									"                    mode: 'raw',\r",
+									"                    raw: JSON.stringify(requestBody)\r",
+									"                }\r",
+									"            };\r",
+									"\r",
+									"            pm.sendRequest(postReq, function(err, res) {\r",
+									"                if (err) {\r",
+									"                    console.error(err);\r",
+									"                    return;\r",
+									"                }\r",
+									"                return resolve(res.json());\r",
+									"            });\r",
+									"        });\r",
+									"}\r",
+									"\r",
+									"const compositeBody = {...}\r",
+									"\r",
+									"const orgurl = pm.collectionVariables.get('orgurl');\r",
+									"const apiversion = pm.collectionVariables.get('apiversion');\r",
+									"const composite = pm.collectionVariables.get('composite');\r",
+									"\r",
+									"const compositeUrl = composite.replace('{{orgurl}}', orgurl).replace('{{apiversion}}', apiversion);\r",
+									"const authToken = `Bearer ${pm.collectionVariables.get('accesstoken')}`;\r",
+									"\r",
+									"sendPostRequest(compositeUrl, authToken, compositeBody)\r",
+									"    .then(((data) => \r",
+									"    { \r",
+									"        console.log(`Response body: ${JSON.stringify(data)}`);\r",
+									"\r",
+									"        let accountId = data.compositeResponse[0].body.id;\r",
+									"        // Store the last created Account Id\r",
+									"        pm.collectionVariables.set('lastCreatedAccountId', accountId);\r",
+									"\r",
+									"        // Store the last created Acount Id in a collection    \r",
+									"        let allCreatedAccounts = pm.collectionVariables.get('allCreatedAccounts');\r",
+									"        try {\r",
+									"            allCreatedAccounts = JSON.parse(allCreatedAccounts);\r",
+									"        } catch(ex) {\r",
+									"            allCreatedAccounts = { account: [] };\r",
+									"        }\r",
+									"        allCreatedAccounts.account.add(accountId);\r",
+									"        pm.collectionVariables.set('allCreatedAccounts', JSON.stringify(allCreatedAccounts));\r",
+									"    }));\r",
+									"*/\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "4fc84095-e0fa-4191-bf4a-4eff0ea067a3",
+								"exec": [
+									"// If using postman-echo then the response will be 204\r",
+									"pm.test(\"Http Status is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// If using postman-echo then the response body will be empty\r",
+									"pm.test(\"Response is JSON\", function () {\r",
+									"    pm.expect(pm.response).to.be.json;\r",
+									"});\r",
+									"\r",
+									"let responseJson = pm.response.json();\r",
+									"pm.test(\"Account ID is last account created\", function () {\r",
+									"    let thisAccountId = responseJson.Id;\r",
+									"    let lastAccountCreatedId = pm.collectionVariables.get(\"lastCreatedAccountId\");\r",
+									"    \r",
+									"    pm.expect(thisAccountId).to.eql(lastAccountCreatedId);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}/{{lastCreatedAccountId}}",
+							"host": [
+								"{{accountobject}}"
+							],
+							"path": [
+								"{{lastCreatedAccountId}}"
+							]
+						},
+						"description": "Composite request"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Single Account Record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a314772e-6036-4329-856c-fa0c6120acd3",
+								"exec": [
+									"pm.test(\"Http Status is 201 Created\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 201) {\r",
+									"    pm.test(\"Response is JSON\", function () {\r",
+									"        pm.expect(pm.response).to.be.json;\r",
+									"    });\r",
+									"    \r",
+									"    let responseBody = pm.response.json();\r",
+									"    \r",
+									"    pm.test(\"Messages expected shape\", function () {\r",
+									"        pm.expect(responseBody).to.have.all.keys('id', 'success', 'errors');\r",
+									"    });\r",
+									"    \r",
+									"    pm.test(\"Sucess is true\", function() {\r",
+									"       pm.expect(responseBody.success).to.be.true; \r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Errors array is empty\", function () {\r",
+									"        pm.expect(responseBody.errors).to.be.empty;\r",
+									"    });\r",
+									"\r",
+									"    let accountId = responseBody.id\r",
+									"    console.log(`Account created with id [${accountId}] storing in lastCreatedAccountId and allCreatedAccounts collection`);\r",
+									"\r",
+									"    // Store the last created Account Id\r",
+									"    pm.collectionVariables.set('lastCreatedAccountId', accountId);\r",
+									"\r",
+									"    // Store the last created Acount Id in a collection    \r",
+									"    let allCreatedAccounts = pm.collectionVariables.get('allCreatedAccounts');\r",
+									"    try {\r",
+									"        allCreatedAccounts = JSON.parse(allCreatedAccounts);\r",
+									"    } catch(ex) {\r",
+									"        allCreatedAccounts = { account: [] };\r",
+									"    }\r",
+									"    allCreatedAccounts.account.add(accountId);\r",
+									"    pm.collectionVariables.set('allCreatedAccounts', JSON.stringify(allCreatedAccounts));\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"Name\" : \"{{$randomCompanyName}}\",\r\n    \"BillingStreet\" : \"{{$randomStreetAddress}}\",\r\n    \"BillingCity\" : \"{{$randomCity}}\",\r\n    \"BillingState\" : \"California\",\r\n    \"Industry\" : \"Technology\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{accountobject}}",
+							"host": [
+								"{{accountobject}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Last Created Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}/{{lastCreatedAccountId}}",
+							"host": [
+								"{{accountobject}}"
+							],
+							"path": [
+								"{{lastCreatedAccountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Last Created Account",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a5f796ed-2d2e-4625-8e0f-c643784052e6",
+								"exec": [
+									"pm.test(\"Http Status is 204 No Content\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(204);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 204) {\r",
+									"    // Unset\r",
+									"    pm.collectionVariables.unset('lastCreatedAccountId');\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "557c607a-808f-4e0d-b828-06d238eec962",
+								"exec": [
+									"let lastCreatedAccountId = pm.collectionVariables.get('lastCreatedAccountId');\r",
+									"console.log(`Deleting last created account [${lastCreatedAccountId}]`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{accountobject}}/{{lastCreatedAccountId}}",
+							"host": [
+								"{{accountobject}}"
+							],
+							"path": [
+								"{{lastCreatedAccountId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete All Created Accounts",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "508df8c8-a232-4547-a8e2-741c87388ad0",
+								"exec": [
+									"// Retrieve all of the previously saved Account Id\r",
+									"let allCreatedAccounts = pm.collectionVariables.get('allCreatedAccounts');\r",
+									"if (typeof(allCreatedAccounts) === 'string') {\r",
+									"    try {\r",
+									"        allCreatedAccounts = JSON.parse(allCreatedAccounts);\r",
+									"    } catch(ex) {\r",
+									"        allCreatedAccounts = {};\r",
+									"        allCreatedAccounts.account = [];\r",
+									"    }\r",
+									"} else if(typeof(allCreatedAccounts) == 'undefined') {\r",
+									"    allCreatedAccounts = { account: [] };\r",
+									"}\r",
+									"\r",
+									"let accountIdList = allCreatedAccounts.account.join(',');\r",
+									"pm.collectionVariables.set('accountsToDelete', accountIdList);\r",
+									"console.log(`Deleting accounts [${accountIdList}]`);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "90bfaf5f-d150-46f1-bdde-aa7f2f12bb53",
+								"exec": [
+									"pm.test(\"Http Status is 200 Created\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"if (pm.response.code === 200) {\r",
+									"    pm.collectionVariables.unset('allCreatedAccounts');\r",
+									"    pm.collectionVariables.unset('accountsToDelete');\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{composite}}sobjects?ids={{accountsToDelete}}",
+							"host": [
+								"{{composite}}sobjects"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "{{accountsToDelete}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Account specific requests",
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accesstoken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "971cd425-8a00-4f12-bbb7-40288a14e7fd",
+				"type": "text/javascript",
+				"exec": [
+					"['orgurl', 'accesstoken'].forEach(function(envVariable) {",
+					"    if (!pm.collectionVariables.get(envVariable)) {",
+					"        throw new Error(`The environment variable ${envVariable} has not been set, aborting request.`);",
+					"    }",
+					"});",
+					"",
+					"if (!pm.collectionVariables.get('orgurl').startsWith('https://')) {",
+					"    throw new Error(`The Salesforce URL should include the protocol and start with https://`);",
+					"}",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "7bf935b3-0a8e-41da-ab55-8ebe0c19b60e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "736b5547-13ca-490d-b6ac-a9619213414e",
+			"key": "accesstoken",
+			"value": "1234567890"
+		},
+		{
+			"id": "a1ee4b3d-a8eb-454f-9602-37cc4cba09f5",
+			"key": "orgurl",
+			"value": "https://my.salesforce.com"
+		},
+		{
+			"id": "d5c5e085-35b5-416b-abed-e019367bf2c4",
+			"key": "apiversion",
+			"value": "v42.0"
+		},
+		{
+			"id": "0d86a167-b8e6-43de-bb78-73ef2eb6a179",
+			"key": "accountobject",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/sobjects/Account"
+		},
+		{
+			"id": "db683965-51d5-4bb5-b895-a9e6de251f56",
+			"key": "contactobject",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/sobjects/Contact"
+		},
+		{
+			"id": "b4f0453f-d269-460c-b69d-d00e93245fb8",
+			"key": "userobject",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/sobjects/User"
+		},
+		{
+			"id": "733bf0d3-38c6-4b30-8901-0911655dd70e",
+			"key": "query",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/query/"
+		},
+		{
+			"id": "35e11fec-a943-453d-bbf4-e2c415046c84",
+			"key": "composite",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/composite/"
+		},
+		{
+			"id": "1da1b51a-ded2-4455-b38a-9d5b4ca2aa8a",
+			"key": "tooling",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/tooling/sobjects/"
+		},
+		{
+			"id": "54e32f4a-1536-44f0-aefe-cfc630ac3bf4",
+			"key": "limits",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/limits/"
+		},
+		{
+			"id": "c8826c65-4f9d-40b5-9f7d-0c2d5d73f146",
+			"key": "resources",
+			"value": "{{orgurl}}/services/data/{{apiversion}}/"
+		},
+		{
+			"id": "5e2c0d84-0083-45ed-b4c3-692b14348e57",
+			"key": "objectid",
+			"value": ""
+		},
+		{
+			"id": "76ac5dbf-9451-4eb7-8412-1ce62df26f49",
+			"key": "lastCreatedAccountId",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}

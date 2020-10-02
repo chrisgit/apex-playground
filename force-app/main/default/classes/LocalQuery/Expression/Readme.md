@@ -1,9 +1,25 @@
 String Expression Filtering
 ---------------------------
 
-Apex cannot easily execute dynamic code (although you can use the tooling API which is what SFDX uses) and does not directly support lamba functions. Reducing data AFTER SOQL is not recommended but as an exercise I wanted to see the different ways to do that.
+This is an over the top way of filtering data and uses a more natural language similar to a SQL statement.
 
-String Expression Filtering is storing a filter statement in a string, parsing that string and executing the expression! This code uses the classes from the Basic Predicate example.
+The example below filters all Accounts with Industry of Technology and has less than 200 employees.
+
+```Apex
+List<Account> allAccounts = new List<Account> {
+        new Account(Name = 'IBM', 	Industry = 'Services'),
+        new Account(Name = 'Microsoft', Industry = 'Software'),
+        new Account(Name = 'Oracle', Industry = 'Software')
+};
+
+List<Account> filteredAccounts = ExpressionQueryRunner.filterData(allAccounts, 'Account.Industry == "Technology" and Account.NumberOfEmployees < 200');
+```
+
+The filter is passed as a string and parsed.
+
+The parser comes in two parts
+- [Lexer](Lexer/Lexer.cls) to take the input string and convert it to tokens
+- [Parser](Parser/Parser.cls) takes the tokens and in this case builds a filter statement using the [Basic Predicates](../BasicPredicate/Readme.md) described elsewhere
 
 Pros: 
 - Easier to read filter expressions

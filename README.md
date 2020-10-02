@@ -17,12 +17,22 @@ Create a scratch org using scripts from root ./scripts/create-scratch-org.sh
 Push source code using scripts from root ./scripts/push-source-code.sh
 Open the scratch org instance in a browser with `sfdx force:org:open -u apex-playground`
 
-## Code
+## General Development
+[Running Anonymous Apex](force-app/main/default/classes/Developing/AnonymousApex.md) and [Developer Console](force-app/main/default/classes/Developing/DeveloperConsole.md)
+
+## Code in this repository
+[Dealing with Objects](force-app/main/default/classes/Objects/Readme.md) and [sObjects](force-app/main/default/classes/sObjects/Readme.md)
+
 [Object Oriented Play](force-app/main/default/classes/OOP/Readme.md)
 
 [SOQL Builder using the Visitor pattern](force-app/main/default/classes/Soql/YetAnotherBuilder/Readme.md)
 
 [LINQ like querying](force-app/main/default/classes/LocalQuery/Readme.md)
 
+[Test Data Builder](force-app/main/default/classes/TestData/Readme.md)
+
+[Some of the quirks associated with Apex](force-app/main/default/classes/Quirks/Readme.md)
+
+[Postman Examples](postman/Readme.md)
 
 [Apex is a programming language]: ApexLanguage.md
