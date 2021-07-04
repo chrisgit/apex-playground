@@ -14,7 +14,7 @@ The features of Java stream are –
 
 Apex does not have any in built classes that can stream or map objects but it does come with a powerful object model and fantastic relational querying API in the form of Salesforce Object Querying Language (SOQL).
 
-This exercise is all about taking the result of a SOQL query and then reducing or filtering the results.
+This exercise is all about taking the result of a SOQL query and then reducing or filtering the results, other elements or chaining of iterators can be built on top of the basic filtering functionality.
 
 [Basic Filtering](Basic/Readme.md)
 
@@ -23,3 +23,7 @@ This exercise is all about taking the result of a SOQL query and then reducing o
 [Predicate Filtering](BasicPredicate/Readme.md)
 
 [String Expression Filtering](Expression/Readme.md)
+
+Since creating these classes other projects to perform client side filtering have become available including
+- [Lazy Iterators](https://nebulaconsulting.co.uk/insights/using-lazy-evaluation-to-write-salesforce-apex-code-without-for-loops/) with [code](https://bitbucket.org/aidan_harding/lazy-iterator/src/master/) published on bitbucket. 
+- Apex Lambda with [code](https://github.com/ipavlic/apex-lambda) published on Github.

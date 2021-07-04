@@ -1,127 +1,68 @@
-public with sharing class DynamicSObject {
+// Examples showing how to extract field metadata
+public inherited sharing class SObjectFieldMetadata {
 
     public static void runExamples() {
-        DynamicSObject.useGetAndPutToUpdateFields();
-        DynamicSObject.stringToNewInstance();
-        DynamicSObject.stringToMetadata();
-        DynamicSObject.objectRelationships();
-        DynamicSObject.sobjectFieldInterrogation();
+        SObjectFieldMetadata.getSObjectFieldMetaDataUsingSchemaDescribe('Account', 'AccountNumber');
+        SObjectFieldMetadata.getSObjectFieldsMataDataUsingGetSObjectType('Account', 'AccountNumber');
+        SObjectFieldMetadata.getSObjectFieldMetaDataFromSchemaFieldType(Account.AccountNumber); // Can include more complex related fields such as Account.Contact.Name
+        SObjectFieldMetadata.getSObjectFieldsMataDataUsingSchemaSObjectType(Schema.Account.getSObjectType(), 'AccountNumber');
+        SObjectFieldMetadata.getSObjectFieldsMataDataUsingSDescribedObject(Schema.SObjectType.Account, 'AccountNumber');
     }
 
-
-    public static void useGetAndPutToUpdateFields() {
-        StaticLogger.debug('************* Update fields with Get and Put');
-        //Create contact to update and set string to the email field.
-        Contact exampleContact = new Contact();
-        String emailField = 'Email';
-
-        exampleContact.put(emailField, 'test@email.com');
-        String emailFieldValue = String.valueof(exampleContact.get(emailField)); 
-        
-        StaticLogger.debug('{0} field of Contact SObject has a value of {1}', emailField, emailFieldValue);
-    }
-
-    public static void stringToNewInstance() {
-        StaticLogger.debug('************* String to new sObject instance');
-        String objectToCreate = 'Account';
-
-        // Using globalDescribe
-        Schema.SObjectType objectType = Schema.getGlobalDescribe().get(objectToCreate);
-        Sobject genericObject = objectType.newSObject(); // <== Would need to cast it
-        StaticLogger.debug('Created [{0}] from type [{1}]', genericObject, objectType);
-
-        // Alternative using Type.forName
-        genericObject = ((SObject) Type.forName(objectToCreate).newInstance());
-        objectType = genericObject.getSObjectType();
-        StaticLogger.debug('Created [{0}] from type [{1}]', genericObject, objectType);
-    }
-
-    public static void stringToMetadata() {
-        StaticLogger.debug('************* String to Metadata');
-        String metadataObject = 'Account';
+    public static void getSObjectFieldMetaDataUsingSchemaDescribe(String sObjectName, String fieldName) {
+        StaticLogger.debug('************* SObject Fields using SchemaDescribe');
 
         // Get SObject metadata using Schema.describeSObjects
-        Schema.DescribeSObjectResult describedObject = Schema.describeSObjects(new List<String> {metadataObject}).get(0);
+        Schema.DescribeSObjectResult describedObject = Schema.describeSObjects(new List<String> {sObjectName}).get(0);
         Map<String, Schema.SObjectField> fields = describedObject.fields.getMap(); // <== Get a list of fields
-
-        // Alternative using Type.forName to create Schema object for further interrogation
-        Schema.SObjectType sObjectType = ((SObject)(Type.forName('Schema.' + metadataObject).newInstance())).getSObjectType();        
-        describedObject = sObjectType.getDescribe();
-
-        // Now obtain a reference to a field
-        String objectField = 'AccountNumber';
-        Schema.SObjectField field = describedObject.fields.getMap().get(objectField);
+        Schema.SObjectField field = describedObject.fields.getMap().get(fieldName);
         Schema.DescribeFieldResult fieldResult = field.getDescribe();
 
-        showFieldInterrogation(fieldResult);
+        showFieldMetadata(fieldResult);    
     }
 
-    public static void objectRelationships() {
-        StaticLogger.debug('************* Object relationships');
-        for(Schema.SobjectField field: Account.SobjectType.getDescribe().fields.getMap().Values())
-        {
-            // Only REFERENCE are relationships
-            if(field.getDescribe().getType() == Schema.DisplayType.REFERENCE)
-            {
-                StaticLogger.debug('====parent object====' + field.getDescribe().getReferenceTo());
-            } 
-        }
-        
-        // Child relationships
-        for (Schema.ChildRelationship childRelation: Account.SObjectType.getDescribe().getChildRelationships()) 
-        {
-            StaticLogger.debug('====child object===' + childRelation.getChildSObject());
-        }
+    public static void getSObjectFieldsMataDataUsingGetSObjectType(String sObjectName, String fieldName) {
+        StaticLogger.debug('************* SObject Fields using SObjectType');
 
-        // Show ALL Relations
-        Schema.DescribeSObjectResult describedObject = Schema.describeSObjects(new List<String> { 'Account' }).get(0);
-        Map<String, Schema.SObjectField> schemaMap = describedObject.fields.getMap(); // <== Get a list of fields
-        // Map<String, Schema.SObjectField>  schemaMap = Schema.SObjectType.Account.fields.getMap(); // <== If you already know the type
-        for(String fieldName : schemaMap.keySet()){
-            DescribeFieldResult fieldDescriptor = schemaMap.get(fieldName).getDescribe();
-            String currentRelationshipName = fieldDescriptor.getRelationshipName();
-            StaticLogger.debug('Current relationship name ' + currentRelationshipName + ' type ' + fieldDescriptor.getType());
-            StaticLogger.debug(fieldDescriptor);
-        }
-
-        String objectType = 'Account';
-        Map<String, Schema.SObjectType> globalSchemaMap = Schema.getGlobalDescribe();
-        Schema.SObjectType accountSchema = globalSchemaMap.get(objectType);
-        Map<String, Schema.SObjectField> fieldMap = accountSchema.getDescribe().fields.getMap();
-
-        // Get all the field labels for Account Object where type is reference
-        for (String fieldName: fieldMap.keySet()) {
-            DescribeFieldResult fieldDescriptor = fieldMap.get(fieldName).getDescribe();
-            String fieldLabel = fieldDescriptor.getLabel();
-
-            // Get the display type
-            Schema.DisplayType fieldDisplayType = fieldDescriptor.getType();
-            if(fieldDisplayType == Schema.DisplayType.Reference) {
-                system.debug('====Field Label====' + fieldLabel + ' == ' + fieldDisplayType);
-            }
-        }
-    }
-
-    public static void sobjectFieldInterrogation() {
-        StaticLogger.debug('************* Field Interrogation');
-        // Get reference to an object
-        Schema.SObjectField field = Account.Contact.Name;
-        // Get a reference to a field
+        // Use Type.forName to create an instance of the Schema object for further interrogation
+        Schema.SObjectType sObjectType = ((SObject)(Type.forName('Schema.' + sObjectName).newInstance())).getSObjectType();        
+        Schema.DescribeSObjectResult describedObject = sObjectType.getDescribe();
+        Schema.SObjectField field = describedObject.fields.getMap().get(fieldName);
         Schema.DescribeFieldResult fieldResult = field.getDescribe();
 
-        showFieldInterrogation(fieldResult);
-        
-        // Using "known" object but string field
-        String objectField = 'AccountNumber';
-        Map<String, Schema.SObjectField> schemaMap;
-        schemaMap = Schema.SObjectType.Account.fields.getMap();
-        field = schemaMap.get(objectField);
-        fieldResult = field.getDescribe();
-        
-        showFieldInterrogation(fieldResult);
+        showFieldMetadata(fieldResult);
     }
 
-    public static void showFieldInterrogation(Schema.DescribeFieldResult fieldResult) {
+    public static void getSObjectFieldMetaDataFromSchemaFieldType(Schema.SObjectField field) {
+        StaticLogger.debug('************* SObject Fields using Schema.SObjectField');
+
+        Schema.DescribeFieldResult fieldResult = field.getDescribe();
+
+        showFieldMetadata(fieldResult);
+    }
+
+    public static void getSObjectFieldsMataDataUsingSchemaSObjectType(Schema.SObjectType objectType, String fieldName) {
+        StaticLogger.debug('************* SObject Fields using SObjectType and string fieldname');
+
+        Map<String, Schema.SObjectField> schemaMap = objectType.getDescribe().fields.getMap();
+        Schema.SObjectField field = schemaMap.get(fieldName);
+        Schema.DescribeFieldResult fieldResult = field.getDescribe();
+        
+        showFieldMetadata(fieldResult);
+    }
+
+    public static void getSObjectFieldsMataDataUsingSDescribedObject(Schema.DescribeSObjectResult describedObject, String fieldName) {
+        StaticLogger.debug('************* SObject Fields using DescribeSObjectResult and string fieldname');
+
+        Map<String, Schema.SObjectField> fields = describedObject.fields.getMap();
+        Schema.SObjectField field = describedObject.fields.getMap().get(fieldName);
+        Schema.DescribeFieldResult fieldResult = field.getDescribe();
+
+        showFieldMetadata(fieldResult);
+    }
+
+    public static void showFieldMetadata(Schema.DescribeFieldResult fieldResult) {
+        showFieldResultFor('getName()', fieldResult.getName());
         showFieldResultFor('getByteLength()', fieldResult.getByteLength());
         showFieldResultFor('getCalculatedFormula()', fieldResult.getCalculatedFormula());
         showFieldResultFor('getController()', fieldResult.getController());

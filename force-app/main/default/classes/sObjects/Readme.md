@@ -10,12 +10,17 @@ Using sObjects it is very easy to perform CRUD and Salesforce provide two data m
 - Salesforce Object Query Language (SOQL) 
 - Salesforce Object Search Language (SOSL)
 
+SOQL resembles SQL but is very much a subset of that language.
+
+There is also a specialised form of SOQL for Big Objects (tables that exceed millions of records) as well as Async SOQL.
+
+Using the object model is intuitive if you have used any ORM before.
 To create a new Account row you can simple create a new instance of the Account sObject
 ```Apex
 Account acc = new Account();
 ```
 
-You can create a generic sObject type and cast to other types
+You can create an specific sObject and downcast it to the base sObject type
 ```Apex
 sObject genericSObject = new Account();
 Account acc = (Account)genericSObject;
@@ -60,10 +65,17 @@ Campaign camp = new Campaign();
    }
 ```
 
+### Dynamic creation of objects
+The [DynamicSObjectTests](DynamicSObjectTests) has examples of getting and setting fields on sObjects as well as creating sObjects.
+
 ### sObject Metadata
 Each sObject has a rich set of metadata that can be interrogated to further describe the object and its relationship to other objects.
 
-The [DynamicSObject.cls](DynamicSObject.cls) has examples of how to retrieve the metadata.
+The [SObjectFieldMetadata.cls](SObjectFieldMetadata.cls) has examples of how to obtain information about fields.
+The [SObjectRelationshipMetadata.cls](SObjectRelationshipMetadata.cls) has examples of how to obtain information about relationships.
+
+### Navigating the sObjects
+The [SObjectHelper.cls](SObjectHelper.cls) is a basic helper to descend an sObject in order to get related field values.
 
 ### References
 [Dynamic Apex](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_dynamic.htm)
