@@ -23,7 +23,7 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 ## Code in this repository
 [Dealing with Objects](force-app/main/default/classes/Objects/Readme.md) and [sObjects](force-app/main/default/classes/sObjects/Readme.md)
 
-[Object Oriented Play](force-app/main/default/classes/OOP/Readme.md)
+[Object Oriented Play](object-orientation/main/default/classes/OOP/Readme.md)
 
 [SOQL Builder using the Visitor pattern](soql-builder/main/default/classes/YetAnotherBuilder/Readme.md)
 
