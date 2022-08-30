@@ -1,6 +1,7 @@
 {
   "packageDirectories" : [ 
     { "path": "force-app", "default": true}, 
+    { "path" : "linq-like", "default": false }, 
     { "path" : "soql-builder", "default": false }, 
     { "path" : "utils", "default": false } 
   ],
