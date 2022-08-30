@@ -25,7 +25,7 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 
 [Object Oriented Play](force-app/main/default/classes/OOP/Readme.md)
 
-[SOQL Builder using the Visitor pattern](force-app/main/default/classes/Soql/YetAnotherBuilder/Readme.md)
+[SOQL Builder using the Visitor pattern](soql-builder/main/default/classes/YetAnotherBuilder/Readme.md)
 
 [LINQ like querying](force-app/main/default/classes/LocalQuery/Readme.md)
 

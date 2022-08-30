@@ -24,20 +24,6 @@ public inherited sharing class SoqlProjectionBuilderWithLogic implements ISoqlPr
             this.schema = schema;
         }
     }
-
-    public static void example() {
-        System.debug('**** Starting');
-        SoqlQuery query = new SoqlQuery('Opportunity');
-        query.projection
-            .add(new SoqlField('Name'))
-            .add(new SoqlField('AccountNumber'));
-
-        System.debug('**** Build the Soql');
-        SoqlProjectionBuilder builder = new SoqlProjectionBuilder();
-        builder.build(query);
-
-        System.debug('**** Output: ' + builder.ToString());
-    }
     
     public void build(SoqlQuery query) {
         // Push current object to stack

@@ -3,23 +3,6 @@
 public inherited sharing class SoqlProjectionBuilder implements ISoqlProjectionBuilder {
     protected String output = '';
 
-    public static void example() {
-        System.debug('**** Starting');
-        SoqlQuery query = new SoqlQuery('Opportunity');
-        query.projection
-            .add(new SoqlField('Name'))
-            .add(new SoqlField('AccountNumber'))
-            .add(new SoqlRelation('Hello').add(new SoqlField('World')))
-            .add(new SoqlRelation('Goodbye').add(new SoqlRelation('Cruel').add(new SoqlField('World'))))
-            .add(new SoqlFieldSet('AccountFieldSet'));
-
-        System.debug('**** Build the Soql');
-        SoqlProjectionBuilder builder = new SoqlProjectionBuilder();
-        builder.build(query);
-
-        System.debug('**** Output: ' + builder.ToString());
-    }
-
     public void build(SoqlQuery query) {
         this.output = this.output + 'SELECT ';
         for (ISoqlExpression e : query.projection.expressions) {
