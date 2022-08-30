@@ -5,12 +5,15 @@ public class SoqlBuilderTests {
         SoqlQuery query = new SoqlQuery('Opportunity');
         query.projection
             .add(new SoqlField('Name'))
-            .add(new SoqlField('AccountNumber'));
+            .add(new SoqlField('LeadSource'))            
+            .add(new SoqlField('CloseDate'))
+			.add(new SoqlRelation('Account').add(new SoqlField('Name')));
 
+        // This builder validates the fields
         ISoqlProjectionBuilder builder = new SoqlProjectionBuilderWithLogic();
         builder.build(query);
 
-        System.assertEquals('SELECT Name, AccountNumber FROM Opportunity', builder.toString());
+        System.assertEquals('SELECT Name, LeadSource, CloseDate, Account.Name FROM Opportunity', builder.toString());
     }
 
     @IsTest
@@ -18,12 +21,13 @@ public class SoqlBuilderTests {
         SoqlQuery query = new SoqlQuery('Opportunity');
         query.projection
             .add(new SoqlField('Name'))
-            .add(new SoqlField('AccountNumber'))
+            .add(new SoqlField('SomeFieldThatDoesNotExist'))
             .add(new SoqlRelation('Account').add(new SoqlField('Name')));
 
+        // This builder does not perform any validation, merely outputs what it is given
         ISoqlProjectionBuilder builder = new SoqlProjectionBuilder();
         builder.build(query);
 
-        System.assertEquals('SELECT Name, AccountNumber, Account.Name FROM Opportunity', builder.toString());
+        System.assertEquals('SELECT Name, SomeFieldThatDoesNotExist, Account.Name FROM Opportunity', builder.toString());
     }
 }
