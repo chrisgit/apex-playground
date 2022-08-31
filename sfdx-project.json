@@ -4,6 +4,7 @@
     { "path" : "linq-like", "default": false }, 
     { "path" : "object-orientation", "default": false }, 
     { "path" : "soql-builder", "default": false }, 
+    { "path" : "test-data-builder", "default": false }, 
     { "path" : "utils", "default": false } 
   ],
   "namespace": "",

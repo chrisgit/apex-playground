@@ -29,7 +29,7 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 
 [LINQ like querying](linq-like/main/default/classes/LocalQuery/Readme.md)
 
-[Test Data Builder](force-app/main/default/classes/TestData/Readme.md)
+[Test Data Builder](test-data-builder/main/default/classes/TestData/Readme.md)
 
 [Some of the quirks associated with Apex](force-app/main/default/classes/Quirks/Readme.md)
 
