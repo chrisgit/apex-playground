@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Simple platform event to capture an Address for the purposes of test project</description>
+    <eventType>HighVolume</eventType>
+    <label>Address Change Event</label>
+    <pluralLabel>Address Change Events</pluralLabel>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
+</CustomObject>

@@ -1,6 +1,7 @@
 {
   "packageDirectories" : [ 
     { "path": "force-app", "default": true}, 
+    { "path" : "http", "default": false }, 
     { "path" : "linq-like", "default": false }, 
     { "path" : "object-orientation", "default": false },
     { "path" : "quirks", "default": false }, 
