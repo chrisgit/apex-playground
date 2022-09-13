@@ -3,24 +3,30 @@ public with sharing class TestObjectsTests {
 
     @IsTest
     public static void whenCreateParentAndAddChildThenObjectedLinked() {
-        Account_to acc = Account_to.withDefaultValues()
-            .contact(Contact_to.withDefaultValues());
+        // Creating a parent and adding a child required both items to be persisted
+        Account_to account = new Account_to();
+        Opportunity_to opportunity = new Opportunity_to();
+        Contact_to contact = new Contact_to();
+        account.contact(contact).opportunity(opportunity);
 
-        ObjectRegistry.persist();
+        ObjectRegistry.persist(new Set<TestObject> { account, contact, opportunity });
 
         List<Account> accountList = getAccounts();
         List<Contact> contactList = getContacts();
+        List<Opportunity> opportunityList = getOpportunities();
 
         System.assertEquals(1, accountList.size(), 'CreateParentAddChild: number of accounts not correct');
         System.assertEquals(1, contactList.size(), 'CreateParentAddChild: number of contacts not correct');
+        System.assertEquals(1, contactList.size(), 'CreateParentAddChild: number of opportunities not correct');
         System.assertEquals(accountList.get(0).Id, contactList.get(0).AccountId, 'CreateParentAddChild: Contact not linked to account');
+        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'CreateParentAddChild: Opportunity not linked to account');
     }
 
     @IsTest
     public static void whenCreateChildThenParentsAutomaticallyCreated() {
-        Opportunity_to opp = new Opportunity_to().name('Opp1').stage('Open').closes(2020, 08);
-
-        ObjectRegistry.persist();
+        // Creating a child and adding a parent requires only child to be persisted (parent is automatically pulled in)
+        // However it is better to add all objects
+        ObjectRegistry.persist(new Set<TestObject> { new Opportunity_to().account(new Account_to()) });
 
         List<Account> accountList = getAccounts();
         List<Opportunity> opportunityList = getOpportunities();
@@ -30,53 +36,29 @@ public with sharing class TestObjectsTests {
         System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'CreateChildCreateParent: Opportunity not linked to account');
     }
 
+    // Do a join table test
+
+    // Do some bulk tests
     @IsTest
-    public static void whenChildIsReparentedThenLinkToNewParent() {
-        Account_to acc = Account_to.withDefaultValues();
-        Opportunity_to opp = new Opportunity_to().name('Opp1').stage('Open').closes(2020, 08);
-        acc.opportunity(opp);
+    public static void whenCreatingSingleParentMultipleChildrenThenParentAndChildrenCreated() {
+        Integer numberOfChildRecords = 100;
+        Account_to account = new Account_to().name('Single Account');
+        Set<TestObject> testObjects = new Set<TestObject> { account };
+        for(Integer childCounter = 1; childCounter <= numberOfChildRecords; childCounter++) {
+            testObjects.add(new Opportunity_to().name('Opportunity ' + childCounter).account(account));
+        }
 
-        ObjectRegistry.persist();
+        ObjectRegistry.persist(testObjects);
 
+        // Change this query to resemble the one in the other project
         List<Account> accountList = getAccounts();
         List<Opportunity> opportunityList = getOpportunities();
 
-        System.assertEquals(1, accountList.size(), 'ChildIsReparented: number of accounts not correct');
-        System.assertEquals(1, opportunityList.size(), 'ChildIsReparented: number of opportunities not correct');
-        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'ChildIsReparented: Opportunity not linked to account');
-    }
-
-    @IsTest
-    public static void whenChildIsCreatedParentInjectedThenChildLinksToParent() {
-        Account_to acc = Account_to.withDefaultValues();
-        Opportunity_to opp = new Opportunity_to(acc).name('Opp1').stage('Open').closes(2020, 08);
-
-        ObjectRegistry.persist();
-
-        List<Account> accountList = getAccounts();
-        List<Opportunity> opportunityList = getOpportunities();
-
-        System.assertEquals(1, accountList.size(), 'ChildIsCreatedParentInjected: number of accounts not correct');
-        System.assertEquals(1, opportunityList.size(), 'ChildIsCreatedParentInjected: number of opportunities not correct');
-        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'ChildIsCreatedParentInjected: Opportunity not linked to account');
-    }
-
-    @IsTest
-    public static void whenUsingFluentThenParentChildLinked() {
-        new Account_to()
-            .opportunity(new Opportunity_to().name('Opp1').stage('Open').closes(2020, 08))
-            .contact(Contact_to.withDefaultValues());
-
-        ObjectRegistry.persist();
-
-        List<Account> accountList = getAccounts();
-        List<Opportunity> opportunityList = getOpportunities();
-        List<Contact> contactList = getContacts();
-
-        System.assertEquals(1, accountList.size(), 'UsingFluent: number of accounts not correct');
-        System.assertEquals(1, opportunityList.size(), 'UsingFluent: number of opportunities not correct');
-        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'UsingFluent: Opportunity not linked to account');
-        System.assertEquals(accountList.get(0).Id, contactList.get(0).AccountId, 'UsingFluent: Contact not linked to account');
+        System.assertEquals(1, accountList.size(), 'CreateChildCreateParent: number of accounts not correct');
+        System.assertEquals(numberOfChildRecords, opportunityList.size(), 'CreateChildCreateParent: number of opportunities not correct');
+        for(Integer childCounter = 0; childCounter < numberOfChildRecords; childCounter++) {
+            System.assertEquals(accountList.get(0).Id, opportunityList.get(childCounter).AccountId, 'CreateChildCreateParent: Opportunity ' + childCounter + ' not linked to account');
+        }
     }
 
     private static List<Account> getAccounts() {

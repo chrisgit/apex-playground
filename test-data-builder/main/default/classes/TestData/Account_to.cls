@@ -1,18 +1,20 @@
 @IsTest
 public class Account_to extends TestObject {
+	private Account accountReference;
 
 	public Account_to() {
 		super(Account.SObjectType);
-		
+		accountReference = new Account();
 		name('Acme Corp');
 	}
 
-    public Account_to(Integer howMany) {
-        this();
+    public override SObject getRecord() {
+        return this.accountReference;
     }
 
 	public Account_to name(String value) {
-		return (Account_to) set(Account.Name, value);
+		this.accountReference.Name = value;
+		return this;
 	}
 
 	public Account_to opportunity(Opportunity_to opp) {

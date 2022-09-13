@@ -8,6 +8,9 @@ public inherited sharing class TopGraph {
 
             for(SObjectField rel : obj.parentRelationships.keySet()) {
                 TestObject parent = obj.parentRelationships.get(rel);
+                if (parent == null) {
+                    continue;
+                }
                 addNode(parent.type);
                 addEdge(obj.type, parent.type);
             }

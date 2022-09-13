@@ -1,40 +1,50 @@
 @IsTest
 public class Contact_to extends TestObject {
+    private Contact contactReference;
 
     public Contact_to() {
         super(Contact.SObjectType);
+        contactReference = new Contact();
+        defaultValues();
     }
 
-    public Contact_to(Account_to acc) {
-        super(Contact.SObjectType);
-        setParent(Contact.AccountId, acc);
+    public override SObject getRecord() {
+        return this.contactReference;
     }
 
     public Contact_to first(String value) {
-        return (Contact_to) set(Contact.FirstName, value);
+        this.contactReference.FirstName = value;
+        return this;
     }
 
     public Contact_to last(String value) {
-        return (Contact_to) set(Contact.LastName, value);
+        this.contactReference.LastName = value;
+        return this;
     }
 
     public Contact_to email(String value) {
-        return (Contact_to) set(Contact.Email, value);
+        this.contactReference.Email = value;
+        return this;
     }
 
-    public Contact_to reports(Contact_to c) {
-        setParent(Contact.ReportsToId, c);
-        return (Contact_to) this;
+    public Contact_to reports(Contact_to otherContact) {
+        setParent(Contact.ReportsToId, otherContact);
+        return this;
     }
 
-    public static Contact_to withDefaultValues() {
+    public Account_to account() {
+        return (Account_to)getParent(Contact.AccountId);
+    }
+
+    public Contact_to account(Account_to acc) {
+        return (Contact_to)setParent(Contact.AccountId, acc);
+    }
+
+    private void defaultValues() {
         String firstname = FakerPerson.firstName();
         String lastname = FakerPerson.lastName();
         String emailAddress = String.format('{0}.{1}@{2}', new String[] { firstname, lastname, FakerEmail.address() });
         
-        return new Contact_to()
-            .first(firstname)
-            .last(lastname)
-            .email(emailAddress);
+        first(firstname).last(lastname).email(emailAddress);
     }    
 }
