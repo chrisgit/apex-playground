@@ -20,6 +20,7 @@ public abstract class TestObject {
         this.type = type;
     }
 
+    // Re-add SObject record but do not reference from inherited class, only used when abstract of test object used
     public abstract SObject getRecord();
 
     public TestObject recordType(String developerName) {

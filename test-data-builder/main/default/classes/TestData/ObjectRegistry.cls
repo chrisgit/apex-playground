@@ -11,37 +11,22 @@ public inherited sharing class ObjectRegistry {
             record = obj.getRecord();
             System.Debug('Registering record ' + record);
             if(record.Id == null) {
-                registerAsNew.add(obj);
+                dataUoW.registerNew(record);
             }
 
-            // Ascend all parent objects
-            addParents(obj, registerAsNew, dataUow);
+            for(SObjectField rel: obj.parentRelationships.keySet()) {
+                TestObject parent = obj.parentRelationships.get(rel);
+                if (parent == null) {
+                    continue;
+                }
+                parentRecord = parent.getRecord();
+                string debugMessage = string.format('Registering relationship for {0} on field {1} to object {2}', new object[] { record, rel, parentRecord });
+                System.Debug(debugMessage);
+                dataUow.registerRelationship(obj.getRecord(), rel, parentRecord);
+            }    
         }
-         
-         for(TestObject o : registerAsNew) {         
-             dataUoW.registerNew(o.getRecord());
-         }
          
         dataUow.commitWork();
-    }
-
-    private static void addParents(TestObject obj, Set<TestObject> registerAsNew, SimpleUnitOfWork dataUow) {
-        for(SObjectField rel: obj.parentRelationships.keySet()) {
-            TestObject parent = obj.parentRelationships.get(rel);
-            if (parent == null) {
-                continue;
-            }
-            Sobject parentRecord = parent.getRecord();
-            System.Debug('Registering relationships ' + rel + ' ' + parentRecord);
-            dataUow.registerRelationship(obj.getRecord(), rel, parentRecord);
-
-            if (parentRecord.Id == null && registerAsNew.contains(parent) == false) {
-                System.Debug('Adding parent record ' + parentRecord);
-                //dataUoW.registerNew(parentRecord); // Would not work if parent registered more than once
-                registerAsNew.add(parent);
-                addParents(parent, registerAsNew, dataUow);                
-            }
-        }
     }
 
     private static SimpleUnitOfWork unitOfWork(Set<TestObject> testObjects) {

@@ -39,18 +39,22 @@ public inherited sharing class SimpleUnitOfWork {
             for(Schema.SObjectType sObjectType : objectTypes)
             {
                 Boolean hasSelfLookup = objectRelationships.get(sObjectType.getDescribe().getName()).resolve();
+                System.Debug('SimpleUnitOfWork: Inserting records for type ' + sObjectType);
                 dml.dmlInsert(itemsToAdd.get(sObjectType.getDescribe().getName()));
 
                 if(hasSelfLookup) {
                     objectRelationships.get(sObjectType.getDescribe().getName()).resolve();
+                    System.Debug('SimpleUnitOfWork: Inserting self-referential records for type ' + sObjectType);
                     dml.dmlUpdate(itemsToAdd.get(sObjectType.getDescribe().getName()));
                 }
             }
 
             for(Schema.SObjectType sObjectType : objectTypes) {
+                System.Debug('SimpleUnitOfWork: Updating records for type ' + sObjectType);
                 dml.dmlUpdate(itemsToUpdate.get(sObjectType.getDescribe().getName()).values());
             }
 
+            System.Debug('SimpleUnitOfWork: Deleting records');
             Integer objectIdx = objectTypes.size() - 1;
             while(objectIdx >= 0) {
                 dml.dmlDelete(itemsToDelete.get(objectTypes[objectIdx--].getDescribe().getName()).values());
