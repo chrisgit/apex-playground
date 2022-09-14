@@ -8,7 +8,7 @@ public with sharing class TestObjectsTests {
         Contact_to contact = new Contact_to();
         account.contact(contact).opportunity(opportunity);
 
-        ObjectRegistry.persist(new Set<TestObject> { account, contact, opportunity });
+        ObjectRegistry.simpleInsert(new Set<TestObject> { account, contact, opportunity });
 
         List<Account> accountList = getAccounts();
         List<Contact> contactList = getContacts();
@@ -25,14 +25,18 @@ public with sharing class TestObjectsTests {
     public static void whenCreateChildThenParentsAutomaticallyCreated() {
         Account_to account = new Account_to();
         Opportunity_to opportunity = new Opportunity_to().account(account);
+        Contact_to contact = new Contact_to().account(account);
 
-        ObjectRegistry.persist(new Set<TestObject> { account, opportunity });
+        ObjectRegistry.simpleInsert(new Set<TestObject> { account, opportunity, contact });
 
         List<Account> accountList = getAccounts();
         List<Opportunity> opportunityList = getOpportunities();
+        List<Contact> contactList = getContacts();
 
         System.assertEquals(1, accountList.size(), 'CreateChildCreateParent: number of accounts not correct');
         System.assertEquals(1, opportunityList.size(), 'CreateChildCreateParent: number of opportunities not correct');
+        System.assertEquals(1, contactList.size(), 'CreateChildCreateParent: number of opportunities not correct');
+        System.assertEquals(accountList.get(0).Id, contactList.get(0).AccountId, 'CreateParentAddChild: Contact not linked to account');
         System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'CreateChildCreateParent: Opportunity not linked to account');
     }
 
@@ -45,7 +49,7 @@ public with sharing class TestObjectsTests {
             testObjects.add(new Opportunity_to().name('Opportunity ' + childCounter).account(account));
         }
 
-        ObjectRegistry.persist(testObjects);
+        ObjectRegistry.simpleInsert(testObjects);
 
         // Change this query to resemble the one in the other project
         List<Account> accountList = getAccounts();
@@ -77,7 +81,7 @@ public with sharing class TestObjectsTests {
             }
         }
 
-        ObjectRegistry.persist(testObjects);
+        ObjectRegistry.simpleInsert(testObjects);
 
         List<Account> accountList = getAccounts();
         List<Opportunity> opportunityList = getOpportunities();

@@ -1,10 +1,10 @@
 public inherited sharing class ObjectRegistry {
 
-     public static void persist(Set<TestObject> testObjects) {        
-        // Would not work as SObject because of equality issues
+     public static void insertUsingUnitOfWork(Set<TestObject> testObjects) {        
         Set<TestObject> registerAsNew = new Set<TestObject>(); 
-        
-        SimpleUnitOfWork dataUow = unitOfWork(testObjects);
+        List<SObjectType> insertOrder = new TopGraph(testObjects).sort();
+        System.Debug('Insert order for UoW is ' + insertOrder);
+       SimpleUnitOfWork dataUow = new SimpleUnitOfWork(insertOrder);
         SObject record;
         SObject parentRecord;
         for(TestObject obj: testObjects) {
@@ -25,13 +25,44 @@ public inherited sharing class ObjectRegistry {
                 dataUow.registerRelationship(obj.getRecord(), rel, parentRecord);
             }    
         }
-         
+
         dataUow.commitWork();
     }
 
-    private static SimpleUnitOfWork unitOfWork(Set<TestObject> testObjects) {
+    public static void simpleInsert(Set<TestObject> testObjects) {       
         List<SObjectType> insertOrder = new TopGraph(testObjects).sort();
         System.Debug('Insert order for UoW is ' + insertOrder);
-        return new SimpleUnitOfWork(insertOrder);
+
+        List<TestObject> objectsToInsert;
+        for (SObjectType objectType : insertOrder) {
+            objectsToInsert = new List<TestObject>();
+            for(TestObject obj : testObjects) {
+                if (obj.type == objectType) {
+                    objectsToInsert.add(obj);
+                }
+            }
+            doInsert(objectsToInsert);
+        }
+    }
+
+    private static void doInsert(List<TestObject> objectsToInsert) {
+        List<SObject> sobjectsToInsert = new List<SObject>();
+        SObject record;
+        SObject parentRecord;
+        for(TestObject obj : objectsToInsert) {
+            record = obj.getRecord();
+            for(SObjectField relatedField : obj.parentRelationships.keySet()) {
+                TestObject parent = obj.parentRelationships.get(relatedField);
+                if (parent == null) {
+                    continue;
+                }
+                parentRecord = parent.getRecord();
+                record.put(relatedField, parentRecord.Id);
+            }    
+
+            sobjectsToInsert.add(record);
+        }
+
+        insert sobjectsToInsert;
     }
 }

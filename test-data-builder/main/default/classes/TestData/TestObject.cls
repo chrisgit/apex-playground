@@ -29,12 +29,12 @@ public abstract class TestObject {
         return this;
     }
 
-    protected TestObject setParent(SObjectField relationship, TestObject newParent) {
-        parentRelationships.put(relationship, newParent);
+    protected TestObject setParent(SObjectField relatedField, TestObject parentObject) {
+        parentRelationships.put(relatedField, parentObject);
         return this;
     }
 
-    protected TestObject getParent(SObjectField relationship) {
-        return parentRelationships.get(relationship);
+    protected TestObject getParent(SObjectField relatedField) {
+        return parentRelationships.get(relatedField);
     }
 }

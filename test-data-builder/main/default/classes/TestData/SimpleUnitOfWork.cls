@@ -1,3 +1,5 @@
+// Cut down version of Financial Force unit of work
+// https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_SObjectUnitOfWork.cls
 public inherited sharing class SimpleUnitOfWork {
     protected List<Schema.SObjectType> objectTypes = new List<Schema.SObjectType>();
 
