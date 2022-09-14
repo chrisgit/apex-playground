@@ -10,15 +10,12 @@ public with sharing class TestObjectsTests {
 
         ObjectRegistry.simpleInsert(new Set<TestObject> { account, contact, opportunity });
 
-        List<Account> accountList = getAccounts();
-        List<Contact> contactList = getContacts();
-        List<Opportunity> opportunityList = getOpportunities();
-
-        System.assertEquals(1, accountList.size(), 'CreateParentAddChild: number of accounts not correct');
-        System.assertEquals(1, contactList.size(), 'CreateParentAddChild: number of contacts not correct');
-        System.assertEquals(1, contactList.size(), 'CreateParentAddChild: number of opportunities not correct');
-        System.assertEquals(accountList.get(0).Id, contactList.get(0).AccountId, 'CreateParentAddChild: Contact not linked to account');
-        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'CreateParentAddChild: Opportunity not linked to account');
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(1, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(1, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(1, ao.Contacts.size(), 'Number of contacts not correct');
+        }
     }
 
     @IsTest
@@ -29,15 +26,12 @@ public with sharing class TestObjectsTests {
 
         ObjectRegistry.simpleInsert(new Set<TestObject> { account, opportunity, contact });
 
-        List<Account> accountList = getAccounts();
-        List<Opportunity> opportunityList = getOpportunities();
-        List<Contact> contactList = getContacts();
-
-        System.assertEquals(1, accountList.size(), 'CreateChildCreateParent: number of accounts not correct');
-        System.assertEquals(1, opportunityList.size(), 'CreateChildCreateParent: number of opportunities not correct');
-        System.assertEquals(1, contactList.size(), 'CreateChildCreateParent: number of opportunities not correct');
-        System.assertEquals(accountList.get(0).Id, contactList.get(0).AccountId, 'CreateParentAddChild: Contact not linked to account');
-        System.assertEquals(accountList.get(0).Id, opportunityList.get(0).AccountId, 'CreateChildCreateParent: Opportunity not linked to account');
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(1, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(1, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(1, ao.Contacts.size(), 'Number of contacts not correct');
+        }
     }
 
     @IsTest
@@ -47,25 +41,26 @@ public with sharing class TestObjectsTests {
         Set<TestObject> testObjects = new Set<TestObject> { account };
         for(Integer childCounter = 1; childCounter <= numberOfChildRecords; childCounter++) {
             testObjects.add(new Opportunity_to().name('Opportunity ' + childCounter).account(account));
+            testObjects.add(new Contact_to()
+                            .first('Test ' + childCounter).last('Contact ' + childCounter)
+                            .email(childCounter+'@'+childCounter+'.com').account(account));
         }
 
         ObjectRegistry.simpleInsert(testObjects);
 
-        // Change this query to resemble the one in the other project
-        List<Account> accountList = getAccounts();
-        List<Opportunity> opportunityList = getOpportunities();
-
-        System.assertEquals(1, accountList.size(), 'CreateChildCreateParent: number of accounts not correct');
-        System.assertEquals(numberOfChildRecords, opportunityList.size(), 'CreateChildCreateParent: number of opportunities not correct');
-        for(Integer childCounter = 0; childCounter < numberOfChildRecords; childCounter++) {
-            System.assertEquals(accountList.get(0).Id, opportunityList.get(childCounter).AccountId, 'CreateChildCreateParent: Opportunity ' + childCounter + ' not linked to account');
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(1, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(numberOfChildRecords, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(numberOfChildRecords, ao.Contacts.size(), 'Number of contacts not correct');
         }
     }
 
+    // Note: When you have the Developer Console open these "bulk" tests run very slowly due to SF writing to the log
     @IsTest
     public static void whenCreatingMultipleParentMultipleChildrenThenParentAndChildrenCreated() {
-        Integer numberOfAccountRecords = 30;// 30;
-        Integer numberOfOpportunityRecordsPerAccount = 10; // 10;
+        Integer numberOfAccountRecords = 30;
+        Integer numberOfOpportunityRecordsPerAccount = 10;
         Integer numberOfContactRecordsPerAccount = 10;
         Set<TestObject> testObjects = new Set<TestObject>();
         for(Integer accountCounter = 1; accountCounter <= numberOfAccountRecords; accountCounter++) {
@@ -83,27 +78,51 @@ public with sharing class TestObjectsTests {
 
         ObjectRegistry.simpleInsert(testObjects);
 
-        List<Account> accountList = getAccounts();
-        List<Opportunity> opportunityList = getOpportunities();
-        List<Contact> contactList = getContacts();
-
-        Integer totalAccountRecords = numberOfAccountRecords;
-        Integer totalOpportunityRecords = numberOfAccountRecords * numberOfOpportunityRecordsPerAccount;
-        Integer totalContactRecords = numberOfAccountRecords * numberOfContactRecordsPerAccount;
-        System.assertEquals(totalAccountRecords, accountList.size(), 'Number of accounts not correct');
-        System.assertEquals(totalOpportunityRecords, opportunityList.size(), 'Number of opportunities not correct');
-        System.assertEquals(totalContactRecords, contactList.size(), 'Number of contacts not correct');
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(numberOfAccountRecords, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(numberOfOpportunityRecordsPerAccount, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(numberOfContactRecordsPerAccount, ao.Contacts.size(), 'Number of contacts not correct');
+        }
     }
 
-    private static List<Account> getAccounts() {
-        return [SELECT Id, Name, AccountNumber, BillingAddress, ShippingAddress FROM Account];
-    }
+    // For comparison of code/setup and execution time
+    @IsTest
+    public static void whenCreatingMultipleParentMultipleChildrenUsingSObjectsThenParentAndChildrenCreated() {
+        Integer numberOfAccountRecords = 30;
+        Integer numberOfOpportunityRecordsPerAccount = 10;
+        Integer numberOfContactRecordsPerAccount = 10;
+        List<Account> accountsToInsert = new List<Account>();
+        for(Integer accountCounter = 1; accountCounter <= numberOfAccountRecords; accountCounter++) {
+            accountsToInsert.add(new Account(Name = 'Account'+ accountCounter));
+        }
+        insert accountsToInsert;
 
-    private static List<Opportunity> getOpportunities() {
-        return [SELECT Id, Name, AccountId, Description FROM Opportunity];
-    }
+        // Cannot do Opportunity and Contact in a single loop and use List<SObject> due to chunking
+        // ystem.TypeException: Cannot have more than 10 chunks in a single operation. Please rearrange the data to reduce chunking.
+        List<Opportunity> opportunitiesToInsert = new List<Opportunity>();
+        for(Account account : accountsToInsert) {
+            for(Integer opportunityCounter = 1; opportunityCounter <= numberOfOpportunityRecordsPerAccount; opportunityCounter++) {
+                // Have to add all mandatory fields
+                opportunitiesToInsert.add(new Opportunity(Name = 'Opportunity ' + opportunityCounter + account.Name, AccountId = account.Id,
+                                                        CloseDate = Date.newInstance(2020, 1, 1), StageName = 'Open'));
+            }
+        }
+        insert opportunitiesToInsert;
+        List<Contact> contactsToInsert = new List<Contact>();
+        for(Account account : accountsToInsert) {
+            for(Integer contactCounter = 1; contactCounter <= numberOfContactRecordsPerAccount; contactCounter++) {
+                contactsToInsert.add(new Contact(FirstName = 'Contact ' + contactCounter, LastName = account.Name,
+                    Email = contactCounter + '@' + account.Name + '.com', AccountId = account.Id));
+            }
+        }
+        insert contactsToInsert;
 
-    private static List<Contact> getContacts() {
-        return [SELECT Id, AccountId, Description, MailingAddress FROM Contact];
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(numberOfAccountRecords, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(numberOfOpportunityRecordsPerAccount, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(numberOfContactRecordsPerAccount, ao.Contacts.size(), 'Number of contacts not correct');
+        }
     }
 }

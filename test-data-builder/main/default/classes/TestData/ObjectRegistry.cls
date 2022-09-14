@@ -57,6 +57,8 @@ public inherited sharing class ObjectRegistry {
                     continue;
                 }
                 parentRecord = parent.getRecord();
+                // The parent record will have already been updated or set elsewhere 
+                // Therefore ensure the field is updated in this child record
                 record.put(relatedField, parentRecord.Id);
             }    
 
