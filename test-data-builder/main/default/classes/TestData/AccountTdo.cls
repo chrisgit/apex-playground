@@ -1,8 +1,8 @@
 @IsTest
-public class Account_to extends TestObject {
+public class AccountTdo extends TestDataObject {
 	private Account accountReference;
 
-	public Account_to() {
+	public AccountTdo() {
 		super(Account.SObjectType);
 		accountReference = new Account();
 		name('Acme Corp');
@@ -12,23 +12,23 @@ public class Account_to extends TestObject {
         return this.accountReference;
     }
 
-	public Account_to name(String value) {
+	public AccountTdo name(String value) {
 		this.accountReference.Name = value;
 		return this;
 	}
 
-	public Account_to opportunity(Opportunity_to opp) {
+	public AccountTdo opportunity(OpportunityTdo opp) {
 		opp.setParent(Opportunity.AccountId, this);
-		return (Account_to) this;
+		return (AccountTdo) this;
 	}
 
-	public Account_to contact(Contact_to cnt) {
+	public AccountTdo contact(ContactTdo cnt) {
 		cnt.setParent(Contact.AccountId, this);
-		return (Account_to) this;
+		return (AccountTdo) this;
 	}
 
-    public static Account_to withDefaultValues() {
-        return new Account_to()
+    public static AccountTdo withDefaultValues() {
+        return new AccountTdo()
             .name('Default Account');
     }	
 }

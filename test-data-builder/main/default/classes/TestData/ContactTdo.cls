@@ -1,8 +1,8 @@
 @IsTest
-public class Contact_to extends TestObject {
+public class ContactTdo extends TestDataObject {
     private Contact contactReference;
 
-    public Contact_to() {
+    public ContactTdo() {
         super(Contact.SObjectType);
         contactReference = new Contact();
         defaultValues();
@@ -12,32 +12,32 @@ public class Contact_to extends TestObject {
         return this.contactReference;
     }
 
-    public Contact_to first(String value) {
+    public ContactTdo first(String value) {
         this.contactReference.FirstName = value;
         return this;
     }
 
-    public Contact_to last(String value) {
+    public ContactTdo last(String value) {
         this.contactReference.LastName = value;
         return this;
     }
 
-    public Contact_to email(String value) {
+    public ContactTdo email(String value) {
         this.contactReference.Email = value;
         return this;
     }
 
-    public Contact_to reports(Contact_to otherContact) {
+    public ContactTdo reports(ContactTdo otherContact) {
         setParent(Contact.ReportsToId, otherContact);
         return this;
     }
 
-    public Account_to account() {
-        return (Account_to)getParent(Contact.AccountId);
+    public AccountTdo account() {
+        return (AccountTdo)getParent(Contact.AccountId);
     }
 
-    public Contact_to account(Account_to acc) {
-        return (Contact_to)setParent(Contact.AccountId, acc);
+    public ContactTdo account(AccountTdo acc) {
+        return (ContactTdo)setParent(Contact.AccountId, acc);
     }
 
     private void defaultValues() {

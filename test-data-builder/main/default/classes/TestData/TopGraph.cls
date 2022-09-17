@@ -1,22 +1,6 @@
 public inherited sharing class TopGraph {
     protected Map<SObjectType, Set<SObjectType>> objectDependencies = new Map<SObjectType, Set<SObjectType>>();
 
-    public TopGraph(Set<TestObject> objects)
-    {
-        for(TestObject obj : objects) {
-            addNode(obj.type);
-
-            for(SObjectField rel : obj.parentRelationships.keySet()) {
-                TestObject parent = obj.parentRelationships.get(rel);
-                if (parent == null) {
-                    continue;
-                }
-                addNode(parent.type);
-                addEdge(obj.type, parent.type);
-            }
-        }
-    }
-
     public List<SObjectType> sort()
     {
         List<SObjectType> objectQueue = new List<SObjectType>();
@@ -37,14 +21,14 @@ public inherited sharing class TopGraph {
         return objectQueue;
     }
 
-    private void addNode(SObjectType objectType) {
+    public void addNode(SObjectType objectType) {
         if (objectDependencies.containsKey(objectType) == false) {
             objectDependencies.put(objectType, new Set<SObjectType>());
         }
     }
 
-    private void addEdge(SobjectType child, SObjectType parent) {
-        objectDependencies.get(child).add(parent);
+    public void addEdge(SobjectType childType, SObjectType parentType) {
+        objectDependencies.get(childType).add(parentType);
     }
 
     private void topologicalSort(SObjectType objectType, Map<SObjectType, Boolean> visited, List<SObjectType> objectQueue)

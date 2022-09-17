@@ -1,14 +1,14 @@
 // Ideally requires equals and hashcode methods
-public abstract class TestObject {
+public abstract class TestDataObject {
 
     // Actually just needs a tuple
-    public Map<SObjectField, TestObject> parentRelationships {
+    public Map<SObjectField, TestDataObject> parentRelationships {
         private set {
             parentRelationships = value;
         }
         get {
             if (parentRelationships == null) {
-                parentRelationships = new Map<SObjectField, TestObject>();
+                parentRelationships = new Map<SObjectField, TestDataObject>();
             }
             return parentRelationships;
         }
@@ -16,25 +16,25 @@ public abstract class TestObject {
 
     public SObjectType type;
 
-    public TestObject(SObjectType type) {
+    public TestDataObject(SObjectType type) {
         this.type = type;
     }
 
     // Re-add SObject record but do not reference from inherited class, only used when abstract of test object used
     public abstract SObject getRecord();
 
-    public TestObject recordType(String developerName) {
+    public TestDataObject recordType(String developerName) {
         Id rtId = type.getDescribe().getRecordTypeInfosByDeveloperName().get(developerName).getRecordTypeId();
         getRecord().put('RecordTypeId', rtId);
         return this;
     }
 
-    protected TestObject setParent(SObjectField relatedField, TestObject parentObject) {
+    protected TestDataObject setParent(SObjectField relatedField, TestDataObject parentObject) {
         parentRelationships.put(relatedField, parentObject);
         return this;
     }
 
-    protected TestObject getParent(SObjectField relatedField) {
+    protected TestDataObject getParent(SObjectField relatedField) {
         return parentRelationships.get(relatedField);
     }
 }

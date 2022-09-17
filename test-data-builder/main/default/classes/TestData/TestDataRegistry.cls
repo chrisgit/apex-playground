@@ -1,13 +1,12 @@
-public inherited sharing class ObjectRegistry {
+public inherited sharing class TestDataRegistry {
 
-     public static void insertUsingUnitOfWork(Set<TestObject> testObjects) {        
-        Set<TestObject> registerAsNew = new Set<TestObject>(); 
-        List<SObjectType> insertOrder = new TopGraph(testObjects).sort();
+     public static void insertUsingUnitOfWork(Set<TestDataObject> testObjects) {
+        List<SObjectType> insertOrder = getObjectHierarchy(testObjects);
         System.Debug('Insert order for UoW is ' + insertOrder);
-       SimpleUnitOfWork dataUow = new SimpleUnitOfWork(insertOrder);
+        SimpleUnitOfWork dataUow = new SimpleUnitOfWork(insertOrder);
         SObject record;
         SObject parentRecord;
-        for(TestObject obj: testObjects) {
+        for(TestDataObject obj: testObjects) {
             record = obj.getRecord();
             System.Debug('Registering record ' + record);
             if(record.Id == null) {
@@ -15,7 +14,7 @@ public inherited sharing class ObjectRegistry {
             }
 
             for(SObjectField rel: obj.parentRelationships.keySet()) {
-                TestObject parent = obj.parentRelationships.get(rel);
+                TestDataObject parent = obj.parentRelationships.get(rel);
                 if (parent == null) {
                     continue;
                 }
@@ -29,14 +28,14 @@ public inherited sharing class ObjectRegistry {
         dataUow.commitWork();
     }
 
-    public static void simpleInsert(Set<TestObject> testObjects) {       
-        List<SObjectType> insertOrder = new TopGraph(testObjects).sort();
+    public static void simpleInsert(Set<TestDataObject> testObjects) {       
+        List<SObjectType> insertOrder = getObjectHierarchy(testObjects);
         System.Debug('Insert order for UoW is ' + insertOrder);
 
-        List<TestObject> objectsToInsert;
+        List<TestDataObject> objectsToInsert;
         for (SObjectType objectType : insertOrder) {
-            objectsToInsert = new List<TestObject>();
-            for(TestObject obj : testObjects) {
+            objectsToInsert = new List<TestDataObject>();
+            for(TestDataObject obj : testObjects) {
                 if (obj.type == objectType) {
                     objectsToInsert.add(obj);
                 }
@@ -45,14 +44,14 @@ public inherited sharing class ObjectRegistry {
         }
     }
 
-    private static void doInsert(List<TestObject> objectsToInsert) {
+    private static void doInsert(List<TestDataObject> objectsToInsert) {
         List<SObject> sobjectsToInsert = new List<SObject>();
         SObject record;
         SObject parentRecord;
-        for(TestObject obj : objectsToInsert) {
+        for(TestDataObject obj : objectsToInsert) {
             record = obj.getRecord();
             for(SObjectField relatedField : obj.parentRelationships.keySet()) {
-                TestObject parent = obj.parentRelationships.get(relatedField);
+                TestDataObject parent = obj.parentRelationships.get(relatedField);
                 if (parent == null) {
                     continue;
                 }
@@ -62,9 +61,29 @@ public inherited sharing class ObjectRegistry {
                 record.put(relatedField, parentRecord.Id);
             }    
 
-            sobjectsToInsert.add(record);
+            // Ignore if already has an Id
+            if (record.Id == null) {
+                sobjectsToInsert.add(record);
+            }
         }
 
         insert sobjectsToInsert;
+    }
+
+    private static List<SObjectType> getObjectHierarchy(Set<TestDataObject> objects) {
+        TopGraph graph = new TopGraph();
+        for(TestDataObject obj : objects) {
+            graph.addNode(obj.type);
+
+            for(SObjectField rel : obj.parentRelationships.keySet()) {
+                TestDataObject parent = obj.parentRelationships.get(rel);
+                if (parent == null) {
+                    continue;
+                }
+                graph.addNode(parent.type);
+                graph.addEdge(obj.type, parent.type);
+            }
+        }
+        return graph.sort();
     }
 }
