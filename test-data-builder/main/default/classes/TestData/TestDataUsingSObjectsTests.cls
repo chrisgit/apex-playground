@@ -1,6 +1,25 @@
 @IsTest
 public class TestDataUsingSObjectsTests {
-    // SObject, for comparison against other types of builders in terms of code setup and execution time 
+    // SObject, for comparison against other types of builders in terms of code setup and execution time
+    @IsTest
+    public static void whenCreateParentAndAddChildThenObjectsLinked() {
+        Account account = new Account(Name = 'Test Account');
+        Opportunity opportunity = new Opportunity(Name = 'Test Opportunity', CloseDate = Date.newInstance(2020, 1, 1), StageName = 'Open');
+        Contact contact = new Contact(FirstName = 'Unit', LastName = 'Test');
+        insert account;
+        opportunity.AccountId = account.Id;
+        contact.AccountId = account.Id;
+        insert new List<SObject> { opportunity, contact };
+
+        List<Account> accounts = [SELECT Id, Name, (SELECT Id, Name FROM Opportunities), (SELECT Id, Name FROM Contacts) FROM Account];
+        System.assertEquals(1, accounts.size(), 'Number of accounts not correct');
+        for(Account ao: accounts) {
+            System.assertEquals(1, ao.Opportunities.size(), 'Number of opportunities not correct');
+            System.assertEquals(1, ao.Contacts.size(), 'Number of contacts not correct');
+        }
+    }
+
+
     @IsTest
     public static void whenCreatingMultipleParentMultipleChildrenUsingSObjectsThenParentAndChildrenCreated() {
         Integer numberOfAccountRecords = 30;

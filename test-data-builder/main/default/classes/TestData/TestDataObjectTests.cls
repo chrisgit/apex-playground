@@ -2,7 +2,7 @@
 public with sharing class TestDataObjectTests {
 
     @IsTest
-    public static void whenCreateParentAndAddChildThenObjectedLinked() {
+    public static void whenCreateParentAndAddChildThenObjectsLinked() {
         AccountTdo account = new AccountTdo();
         OpportunityTdo opportunity = new OpportunityTdo();
         ContactTdo contact = new ContactTdo();
@@ -19,7 +19,7 @@ public with sharing class TestDataObjectTests {
     }
 
     @IsTest
-    public static void whenCreateChildThenParentsAutomaticallyCreated() {
+    public static void whenCreateChildAndLinkToParentThenObjectsLinked() {
         AccountTdo account = new AccountTdo();
         OpportunityTdo opportunity = new OpportunityTdo().account(account);
         ContactTdo contact = new ContactTdo().account(account);

@@ -3,10 +3,8 @@ public class NamepointingTests {
     @IsTest
     public static void whenCreateParentAndAddChildThenObjectedLinked() {
         Account acc = new Account(Name='Test Account');
-        Opportunity opp = new Opportunity(Name='Test Opportunity', CloseDate=Date.newInstance(2022, 12, 1), StageName='Open');
-        Contact cnt = new Contact(FirstName = 'Unit', LastName = 'Test');
-        opp.Account=acc;
-        cnt.Account=acc;
+        Opportunity opp = new Opportunity(Name='Test Opportunity', CloseDate=Date.newInstance(2022, 12, 1), StageName='Open', Account=acc);
+        Contact cnt = new Contact(FirstName = 'Unit', LastName = 'Test', Account=acc);
 
         Namepointing.simpleInsert(new List<SObject> { acc, opp, cnt });
 
@@ -14,7 +12,7 @@ public class NamepointingTests {
         System.assertEquals(1, accounts.size(), 'Number of accounts not correct');
         for(Account ao: accounts) {
             System.assertEquals(1, ao.Opportunities.size(), 'Number of opportunities not correct');
-            // System.assertEquals(1, ao.Contacts.size(), 'Number of contacts not correct');
+            System.assertEquals(1, ao.Contacts.size(), 'Number of contacts not correct');
         }
     }
 

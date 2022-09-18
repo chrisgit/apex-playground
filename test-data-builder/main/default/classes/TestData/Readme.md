@@ -31,12 +31,14 @@ insert opp;
 The intention was to use the name pointing field (on an object without using an external reference) and provide a class to perform the persistance that resembles the [Database class](https://developer.salesforce.com/docs/atlas.en-us.apexref.meta/apexref/apex_methods_system_database.htm)
 ```
 Account acc = new Account(Name='Acme');
-Opportunity opp = new Opportunity();
-opp.Account = opp;
-TestData.insert(new List<SObject> { acc, opp });
+Opportunity opp = new Opportunity(Name='Acme Sales');
+opp.Account = acc;
+My_Custom_Object__c customObject = new My_Custom_Object__c();
+customObject.Opportunity__r = opp;
+
+TestData.insert(new List<SObject> { acc, opp, customObject });
 ```
 
 The result doesn't save many lines in the setup but could help to logically assign a field of an object to refer to a related object.
-
 
 Since creating the PoC I have come across a [similar implementation](https://github.com/rsoesemann/apex-domainbuilder) by Robert Sösemann and have since added a cut down version of the [Apex Enterprise Library fflib unit of work](https://github.com/apex-enterprise-patterns/fflib-apex-common) and created a variation of the graph to calculate the object dependencies.
