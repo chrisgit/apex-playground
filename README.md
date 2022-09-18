@@ -25,13 +25,13 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 
 [Object Oriented Play](docs/ObjectOrientatedProgramming.md)
 
-[SOQL Builder using the Visitor pattern](src/soql-builder/main/default/classes/YetAnotherBuilder/Readme.md)
+[SOQL Builder using the Visitor pattern](docs/YetAnotherSOQLBuilder.md)
 
-[LINQ like querying](src/linq-like/main/default/classes/LocalQuery/Readme.md)
+[LINQ like querying](docs/LinqLikeQuerying.md)
 
-[Test Data Builder](src/test-data-builder/main/default/classes/TestData/Readme.md)
+[Test Data Builder](docs/TestDataBuilder.md)
 
-[Some of the quirks associated with Apex](src/force-app/main/default/classes/Quirks/Readme.md)
+[Some of the quirks associated with Apex](docs/Quirks.md)
 
 [Postman Examples](postman/Readme.md)
 
