@@ -18,20 +18,20 @@ Push source code using scripts from root ./scripts/push-source-code.sh
 Open the scratch org instance in a browser with `sfdx force:org:open -u apex-playground`
 
 ## General Development
-[Running Anonymous Apex](force-app/main/default/classes/Developing/AnonymousApex.md) and [Developer Console](force-app/main/default/classes/Developing/DeveloperConsole.md)
+[Running Anonymous Apex](docs/developing/AnonymousApex.md) and [Developer Console](docs/developing/DeveloperConsole.md)
 
 ## Code in this repository
-[Dealing with Objects](force-app/main/default/classes/Objects/Readme.md) and [sObjects](force-app/main/default/classes/sObjects/Readme.md)
+[Dealing with Objects](docs/ApexObjects.md) and [sObjects](docs/ApexSObjects.md)
 
-[Object Oriented Play](object-orientation/main/default/classes/OOP/Readme.md)
+[Object Oriented Play](docs/ObjectOrientatedProgramming.md)
 
-[SOQL Builder using the Visitor pattern](soql-builder/main/default/classes/YetAnotherBuilder/Readme.md)
+[SOQL Builder using the Visitor pattern](src/soql-builder/main/default/classes/YetAnotherBuilder/Readme.md)
 
-[LINQ like querying](linq-like/main/default/classes/LocalQuery/Readme.md)
+[LINQ like querying](src/linq-like/main/default/classes/LocalQuery/Readme.md)
 
-[Test Data Builder](test-data-builder/main/default/classes/TestData/Readme.md)
+[Test Data Builder](src/test-data-builder/main/default/classes/TestData/Readme.md)
 
-[Some of the quirks associated with Apex](force-app/main/default/classes/Quirks/Readme.md)
+[Some of the quirks associated with Apex](src/force-app/main/default/classes/Quirks/Readme.md)
 
 [Postman Examples](postman/Readme.md)
 
