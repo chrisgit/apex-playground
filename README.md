@@ -31,6 +31,8 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 
 [Test Data Builder](docs/TestDataBuilder.md)
 
+[Http Helpers](docs/Http.md)
+
 [Some of the quirks associated with Apex](docs/Quirks.md)
 
 [Postman Examples](postman/Readme.md)
