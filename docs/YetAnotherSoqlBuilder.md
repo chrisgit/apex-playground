@@ -1,6 +1,10 @@
 Yet Another SOQL Builder
 ------------------------
 
+The demo-soql-builder folder contains examples for 
+- strongly typed soql builder 
+- lose typed soql builder with two builders using visitor pattern
+
 In some cases writing a SQL or SOQL builder can be useful, if you think about it you can encapsulate several behaviors
 - deconstructs the SQL into component parts
 - enables cross cutting concerns

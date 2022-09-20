@@ -1,7 +1,11 @@
 Unit Test Data Setup
 --------------------
 
-Common types of test data setup
+The demo-test-data-builder folder contains examples for 
+- name pointing data builder
+- simple sObject wrapper data builder
+
+When running unit tests there will be a time when you will need some sort of data setup. The Common types of test data for unit testing different scenarios maybe one of the following
 - Blank files or no data
 - Valid set of test data
 - Invalid set of test data
