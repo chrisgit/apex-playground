@@ -1,6 +1,7 @@
 {
   "packageDirectories" : [ 
     { "path": "force-app", "default": true}, 
+    { "path" : "demo-custom-rest-api", "default": false }, 
     { "path" : "demo-http", "default": false }, 
     { "path" : "demo-linq-like", "default": false }, 
     { "path" : "object-orientation", "default": false },

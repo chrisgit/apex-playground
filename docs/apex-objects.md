@@ -33,11 +33,11 @@ Unfortunately there isn't a lot of metadata or reflection capabilities with obje
 - run a method
 
 #### Retrieving a property
-[DynamicObjectJSON.cls](DynamicObjectJSON.cls) show property access with a get method using JSON serialisation/de-serialisation
-[DynamicObjectMap.cls](DynamicObjectMap.cls) show property access with a get method using a map of objects
+[DynamicObjectJSON.cls](../src/force-app/main/default/classes/Objects/DynamicObjectJson.cls) show property access with a get method using JSON serialisation/de-serialisation
+[DynamicObjectMap.cls](../src/force-app/main/default/classes/Objects/DynamicObjectMap.cls) show property access with a get method using a map of objects
 
 #### Running a method
-In Salesforce Winter '20 a new interface Callable was added. The Callable interface has a single method, the signature is `public Object call(String action, Map<String,Object> args)` and the way it works is that the caller passes an action (which could be the name of an actual method or something else) plus a set of key/value arguments (which could resemble parameter arguments). Example of using the Callable interface is in [DynamicMethodCall.cls](DynamicMethodCall.cls).
+In Salesforce Winter '20 a new interface Callable was added. The Callable interface has a single method, the signature is `public Object call(String action, Map<String,Object> args)` and the way it works is that the caller passes an action (which could be the name of an actual method or something else) plus a set of key/value arguments (which could resemble parameter arguments). Example of using the Callable interface is in [DynamicMethodCall.cls](../src/force-app/main/default/classes/Objects/DynamicMethodCall.cls).
 
 The Callable interface does not add anything new to the Salesforce developer experience, a user interface could have been added to do the same thing, what it does do is formalise the pattern which is of benefit to the community. However, using the Callable technique to invoke a method on another class has these drawbacks
 

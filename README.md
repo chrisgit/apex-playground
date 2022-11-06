@@ -18,23 +18,25 @@ Push source code using scripts from root ./scripts/push-source-code.sh
 Open the scratch org instance in a browser with `sfdx force:org:open -u apex-playground`
 
 ## General Development
-[Running Anonymous Apex](docs/developing/AnonymousApex.md) and [Developer Console](docs/developing/DeveloperConsole.md)
+[Running Anonymous Apex](docs/developing/anonymous-apex.md) and [Developer Console](docs/developing/developer-console.md)
 
 ## Code in this repository
-[Dealing with Objects](docs/ApexObjects.md) and [sObjects](docs/ApexSObjects.md)
+[Dealing with Objects](docs/apex-objects.md) and [sObjects](docs/apex-sobjects.md)
 
-[Object Oriented Play](docs/ObjectOrientatedProgramming.md)
+[Object Oriented Play](docs/object-orientated-programming.md)
 
-[SOQL Builder using the Visitor pattern](docs/YetAnotherSOQLBuilder.md)
+[SOQL Builder using the Visitor pattern](docs/yet-another-SOQL-builder.md)
 
-[LINQ like querying](docs/LinqLikeQuerying.md)
+[LINQ like querying](docs/linq-like-querying.md)
 
-[Test Data Builder](docs/TestDataBuilder.md)
+[Test Data Builder](docs/test-data-builder.md)
 
-[Http Helpers](docs/Http.md)
+[Http Helpers](docs/http.md)
 
-[Some of the quirks associated with Apex](docs/Quirks.md)
+[Custom REST api](docs/custom-rest-api.md)
 
-[Postman Examples](postman/Readme.md)
+[Some of the quirks associated with Apex](docs/quirks.md)
 
-[Apex is a programming language]: ApexLanguage.md
+[Postman Examples](postman/readme.md)
+
+[Apex is a programming language]: apex-language.md
