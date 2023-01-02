@@ -1,6 +1,6 @@
 public class AccountService {
     public static Account createAccount(AccountRestDto dto) {
-        Account acc = new Account(Name=dto.AccountName, AccountNumber=dto.AccountNumber, Industry=dto.Industry);
+        Account acc = AccountRestDto.toSObject(dto);
         insert acc;
         dto.id = acc.id;
         return acc;
@@ -9,7 +9,9 @@ public class AccountService {
     public static void updateAccount(AccountRestDto dto, string accountId) {
         // TODO: Add Error classes
         // Query, if not found then throw exception ... not found
-        update new Account(Id = accountId, Name=dto.AccountName, AccountNumber=dto.AccountNumber, Industry=dto.Industry);
+        Account acc = AccountRestDto.toSObject(dto);
+        acc.Id = accountId;
+        update acc;
     }
 
     private static Account getAccountById(string accountId) {

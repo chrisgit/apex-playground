@@ -25,13 +25,13 @@ Open the scratch org instance in a browser with `sfdx force:org:open -u apex-pla
 
 [Object Oriented Play](docs/object-orientated-programming.md)
 
-[SOQL Builder using the Visitor pattern](docs/yet-another-SOQL-builder.md)
+[SOQL Builder using the Visitor pattern](docs/yet-another-soql-builder.md)
 
 [LINQ like querying](docs/linq-like-querying.md)
 
 [Test Data Builder](docs/test-data-builder.md)
 
-[Http Helpers](docs/http.md)
+[Http Helpers](docs/http-helpers.md)
 
 [Custom REST api](docs/custom-rest-api.md)
 
