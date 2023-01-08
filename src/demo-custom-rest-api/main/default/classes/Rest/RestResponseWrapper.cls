@@ -65,6 +65,7 @@ public inherited sharing class RestResponseWrapper {
     }
 
     private RestResponseWrapper BodyAsJson(Object body, Boolean suppressApexObjectNulls) {
+        RestContext.response.addHeader('Content-Type', 'application/json');
         RestContext.response.responseBody = Blob.valueOf(JSON.serialize(body, suppressApexObjectNulls));
         return this;
     }
