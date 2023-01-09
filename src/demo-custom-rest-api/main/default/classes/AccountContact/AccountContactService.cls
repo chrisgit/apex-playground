@@ -3,27 +3,24 @@ public class AccountContactService {
     public static Id createAccountAndContacts(AccountRestDto dto) {
         validateCreateRequest(dto);
 
-        Account acc;
         Savepoint sp = Database.setSavepoint();
         try {
-            acc = AccountRestDtoMapper.toAccountSObject(dto);
-            createAccount(acc);
+            Account acc = createAccount(dto);
             createContacts(dto, acc);
+            return acc.Id;
         } catch (Exception exc) {
             Database.rollback(sp);
             throw exc;
         }
-        return acc.Id;
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public static void updateAccount(AccountRestDto dto, string accountId) {
         validateUpdateRequest(dto);
 
-        Account acc;
         Savepoint sp = Database.setSavepoint();
         try {
-            acc = AccountRestDtoMapper.toAccountSObject(dto);
+            Account acc = AccountRestDtoMapper.toAccountSObject(dto);
             acc.Id = accountId;
             update acc;
         } catch (Exception exc) {
@@ -44,7 +41,8 @@ public class AccountContactService {
     }
 
     @SuppressWarnings('PMD.ApexCRUDViolation')
-    private static Account createAccount(Account acc) {
+    private static Account createAccount(AccountRestDto dto) {
+        Account acc = AccountRestDtoMapper.toAccountSObject(dto);
         insert acc;
         return acc;
     }
