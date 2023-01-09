@@ -17,4 +17,13 @@ public inherited sharing class RestRequestWrapper {
     public RequestType getRequestType() {
         return this.requestType;
     }
+
+    public Boolean hasBody() {
+        return string.isBlank(this.requestBody.toString()) ? false : true;
+    }
+
+    public Object deserialiseBody(System.Type apexType) {
+        return JSON.deserialize(this.requestBody.toString(), apexType);
+
+    }
 }

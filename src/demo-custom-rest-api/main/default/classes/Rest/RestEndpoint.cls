@@ -4,8 +4,8 @@ global inherited sharing class RestEndpoint {
 
     static
     {
-        dispatcher.register(new AccountsRestController('/accounts'));
-        dispatcher.register(new AccountIdRestController('/accounts/{id}'));
+        dispatcher.register(new AccountContactRestController('/accounts'));
+        dispatcher.register(new AccountIdContactRestController('/accounts/{id}'));
     }
 
     @HttpGet

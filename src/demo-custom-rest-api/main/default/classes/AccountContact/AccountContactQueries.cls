@@ -1,4 +1,4 @@
-public with sharing class AccountAndContactQueries {
+public with sharing class AccountContactQueries {
     @SuppressWarnings('PMD.ApexCRUDViolation')
     public static List<Account> getAllAccountsWithContacts() {
         List<Account> accounts = [
@@ -19,6 +19,11 @@ public with sharing class AccountAndContactQueries {
             FROM Account
             WHERE Id = :accountId
             LIMIT 1];
+        
+        if (accounts.size() == 0) {
+            throw new AccountNotFoundException(string.format('Account [{0}] not found', new Object[] { accountId }));
+        }
+
         return accounts;
     }
 }
