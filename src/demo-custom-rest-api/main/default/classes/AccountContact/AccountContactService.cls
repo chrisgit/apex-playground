@@ -63,16 +63,16 @@ public class AccountContactService {
 
     private static void validateCreateRequest(AccountRestDto dto) {
         if (dto.hasAccountId()) {
-            throw new InvalidRequestException('Create Account and Contacts. Unexpected field AccountId');
+            InvalidRequestException.raise('Create Account and Contacts. Unexpected field AccountId');
         }
     }
 
     private static void validateUpdateRequest(AccountRestDto dto) {
         if (dto.hasAccountId()) {
-            throw new InvalidRequestException('Update Account. Unexpected field AccountId');          
+            InvalidRequestException.raise('Update Account. Unexpected field AccountId');          
         }
         if (dto.hasContacts() == true) {
-            throw new InvalidRequestException('Update Account. Unexpected list of contacts, please supply account only');
+            InvalidRequestException.raise('Update Account. Unexpected list of contacts, please supply account only');
         }
     }
 }

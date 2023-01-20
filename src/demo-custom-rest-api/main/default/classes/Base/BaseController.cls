@@ -33,10 +33,14 @@ public abstract inherited sharing class BaseController {
 
         try {
             return handleRequest();
-        } catch (Exception exc) {
+        } catch (CustomRestException ex) {
+            System.debug(LoggingLevel.ERROR, 'BaseController handled custom REST exception');
+            System.debug(LoggingLevel.ERROR, ex);
+            return Response.CustomRestException(ex);            
+        } catch (Exception ex) {
             System.debug(LoggingLevel.ERROR, 'BaseController handled exception');
-            System.debug(LoggingLevel.ERROR, exc);
-            return Response.InternalServerError(); // Some sort of Error Array but for now bad request
+            System.debug(LoggingLevel.ERROR, ex);
+            return Response.CustomRestException(UnknownRestException.raise(ex));
         }
     }
 

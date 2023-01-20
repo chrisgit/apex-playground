@@ -69,4 +69,8 @@ public inherited sharing class RestResponseWrapper {
         RestContext.response.responseBody = Blob.valueOf(JSON.serialize(body, suppressApexObjectNulls));
         return this;
     }
+
+    public RestResponseWrapper CustomRestException(CustomRestException ex) {
+        return StatusCodeAndResponse(ex.getHttpStatusCode(),  new ErrorResponseDTO(ex), true);
+    }
 }
